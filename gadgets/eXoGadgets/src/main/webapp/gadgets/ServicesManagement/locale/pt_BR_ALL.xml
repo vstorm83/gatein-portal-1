@@ -20,9 +20,9 @@
 
 -->
 <messagebundle>
-  <msg name="title">Services Management</msg>
+  <msg name="title">Gerenciamento de serviços</msg>
   <msg name="services">Services</msg>
-  <msg name="name">Name</msg>
+  <msg name="name">Nome</msg>
   <msg name="description">Description</msg>
   <msg name="noDescription">No description</msg>
   <msg name="method">Method</msg>
