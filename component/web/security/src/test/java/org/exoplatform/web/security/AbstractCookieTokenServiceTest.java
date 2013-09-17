@@ -34,15 +34,6 @@ import org.gatein.wci.security.Credentials;
         @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/exo.portal.component.test.jcr-configuration.xml"),
         @ConfigurationUnit(scope = ContainerScope.PORTAL, path = "conf/jcr-configuration.xml") })
 public abstract class AbstractCookieTokenServiceTest extends AbstractTokenServiceTest<CookieTokenService> {
-    protected void setUp() throws Exception {
-        service = createService();
-        Thread.sleep(1000); // for enough time initial database
-    }
-
-    /**
-     * @return
-     */
-    protected abstract CookieTokenService createService();
 
     @Override
     public void testGetToken() throws Exception {
@@ -78,15 +69,16 @@ public abstract class AbstractCookieTokenServiceTest extends AbstractTokenServic
 
     @Override
     public void testCleanExpiredTokens() throws Exception {
-        assertEquals(service.getValidityTime(), 2);
-        service.createToken(new Credentials("user1", "gtn"));
-        Thread.sleep(1000);
-        service.createToken(new Credentials("user2", "gtn"));
-        assertEquals(service.size(), 2);
-        Thread.sleep(1500);
+        assertEquals(2, service.getValidityTime());
+        String tokenId1 = service.createToken(new Credentials("user1", "gtn"));
+        assertEquals(1, service.size());
+
+        Thread.sleep(2100);
         service.cleanExpiredTokens();
-        /* Here we should be cca 2.5 seconds after the creation of user1, so it should have been cleaned as expred already */
-        assertEquals(service.size(), 1);
+        assertEquals(0, service.size());
+
+        service.deleteToken(tokenId1);
+
     }
 
 }
