@@ -27,7 +27,7 @@
   <msg name="noDescription">Sin descripción</msg>
   <msg name="method">Método</msg>
   <msg name="parameters">Parámetros</msg>
-  <msg name="action">Action</msg>
+  <msg name="action">Acción</msg>
   <msg name="value">Valor</msg>
   <msg name="services_url">Servicios de URL</msg>
   <msg name="failManage">Temporalmente no se puede administrar los servicios desde otro host hasta que soportemos OAuth</msg>
