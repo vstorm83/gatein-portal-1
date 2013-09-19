@@ -22,12 +22,12 @@
 <messagebundle>
   <msg name="title">Support av tjänster</msg>
   <msg name="services">Tjänster</msg>
-  <msg name="name">Name</msg>
-  <msg name="description">Description</msg>
+  <msg name="name">Namn</msg>
+  <msg name="description">Beskrivning</msg>
   <msg name="noDescription">Ingen beskrivning</msg>
   <msg name="method">Metod</msg>
   <msg name="parameters">Parametrar</msg>
-  <msg name="action">Action</msg>
+  <msg name="action">Åtgärd</msg>
   <msg name="value">Värde</msg>
   <msg name="services_url">Servic-URL</msg>
   <msg name="failManage">Kan tillfälligt inte ge support från annan host tills vi stödjer OAuth</msg>
