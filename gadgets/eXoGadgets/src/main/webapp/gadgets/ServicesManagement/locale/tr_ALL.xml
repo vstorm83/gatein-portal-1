@@ -20,19 +20,19 @@
 
 -->
 <messagebundle>
-  <msg name="title">Services Management</msg>
-  <msg name="services">Services</msg>
-  <msg name="name">Name</msg>
-  <msg name="description">Description</msg>
-  <msg name="noDescription">No description</msg>
+  <msg name="title">Hizmetlerin Yönetimi</msg>
+  <msg name="services">Hizmetler</msg>
+  <msg name="name">Ad</msg>
+  <msg name="description">Açıklama</msg>
+  <msg name="noDescription">Açıklama Yok</msg>
   <msg name="method">Yöntem</msg>
   <msg name="parameters">Parametreler</msg>
-  <msg name="action">Action</msg>
+  <msg name="action">Eylem</msg>
   <msg name="value">Değer</msg>
-  <msg name="services_url">Services URL</msg>
-  <msg name="failManage">Temporary can't manage services from other host until we support OAuth</msg>
-  <msg name="noServices">No service's available or you don't have enough permission</msg>
-  <msg name="noMethod">No method</msg>
-  <msg name="noProperty">No property</msg>
-  <msg name="badURL">Error while retrieving data, please check your URL preference</msg>
+  <msg name="services_url">Hizmetlerin URL'si</msg>
+  <msg name="failManage">Geçici olarak diğer sunucularda bulunan servisleri yönetemezsiniz</msg>
+  <msg name="noServices">Hiçbir hizmet yok  ya da yeterli izne sahip değilsiniz</msg>
+  <msg name="noMethod">Yöntem yok</msg>
+  <msg name="noProperty">Özellik yok</msg>
+  <msg name="badURL">Veri alınırken bir hata oluştu. Lütfen tercih ettiğiniz URL'yi kontrol edin</msg>
 </messagebundle>
