@@ -51,6 +51,7 @@
     <Locale lang="zh" messages="locale/zh_CN_ALL.xml"/>
     <Locale lang="fi" messages="locale/fi_ALL.xml"/>
     <Locale lang="lt" messages="locale/lt_ALL.xml"/>
+    <Locale lang="no" messages="locale/no_ALL.xml"/>
     <Require feature="dynamic-height"/>
     <Require feature="minimessage"/>
     <Require feature="views"/>
