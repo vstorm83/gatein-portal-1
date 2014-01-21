@@ -20,7 +20,7 @@
 
 -->
 <messagebundle>
-  <msg name="title">Services Management</msg>
+  <msg name="title">Tjenesteadministrasjon</msg>
   <msg name="services">Tjenester</msg>
   <msg name="name">Navn</msg>
   <msg name="description">Beskrivelse</msg>
@@ -30,9 +30,9 @@
   <msg name="action">Handling</msg>
   <msg name="value">Verdi</msg>
   <msg name="services_url">Tjeneste URL</msg>
-  <msg name="failManage">Temporary can't manage services from other host until we support OAuth</msg>
-  <msg name="noServices">No service's available or you don't have enough permission</msg>
+  <msg name="failManage">Det er ikke mulig å administrere tjenester fra andre maskiner før vi har lagt til støtte for OAuth</msg>
+  <msg name="noServices">Ingen tjeneste er tilgjengelig, eller så har du ikke tilstrekkelige rettigheter</msg>
   <msg name="noMethod">Ingen metode</msg>
   <msg name="noProperty">Ingen egenskap</msg>
-  <msg name="badURL">Error while retrieving data, please check your URL preference</msg>
+  <msg name="badURL">Det oppstod en feil under henting av data. Sjekk URLen som er lagt inn</msg>
 </messagebundle>
