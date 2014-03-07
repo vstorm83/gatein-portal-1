@@ -20,19 +20,19 @@
 
 -->
 <messagebundle>
-  <msg name="title">{crwdns6420717:0}{crwdne6420717:0}</msg>
-  <msg name="services">{crwdns6420718:0}{crwdne6420718:0}</msg>
-  <msg name="name">{crwdns6420719:0}{crwdne6420719:0}</msg>
-  <msg name="description">{crwdns6420720:0}{crwdne6420720:0}</msg>
-  <msg name="noDescription">{crwdns6420721:0}{crwdne6420721:0}</msg>
-  <msg name="method">{crwdns6420722:0}{crwdne6420722:0}</msg>
-  <msg name="parameters">{crwdns6420723:0}{crwdne6420723:0}</msg>
-  <msg name="action">{crwdns6420724:0}{crwdne6420724:0}</msg>
-  <msg name="value">{crwdns6420725:0}{crwdne6420725:0}</msg>
-  <msg name="services_url">{crwdns6420726:0}{crwdne6420726:0}</msg>
-  <msg name="failManage">{crwdns6420727:0}{crwdne6420727:0}</msg>
-  <msg name="noServices">{crwdns6420728:0}{crwdne6420728:0}</msg>
-  <msg name="noMethod">{crwdns6420729:0}{crwdne6420729:0}</msg>
-  <msg name="noProperty">{crwdns6420730:0}{crwdne6420730:0}</msg>
-  <msg name="badURL">{crwdns6420731:0}{crwdne6420731:0}</msg>
+  <msg name="title">crwdns6420717:0crwdne6420717:0</msg>
+  <msg name="services">crwdns6420718:0crwdne6420718:0</msg>
+  <msg name="name">crwdns6420719:0crwdne6420719:0</msg>
+  <msg name="description">crwdns6420720:0crwdne6420720:0</msg>
+  <msg name="noDescription">crwdns6420721:0crwdne6420721:0</msg>
+  <msg name="method">crwdns6420722:0crwdne6420722:0</msg>
+  <msg name="parameters">crwdns6420723:0crwdne6420723:0</msg>
+  <msg name="action">crwdns6420724:0crwdne6420724:0</msg>
+  <msg name="value">crwdns6420725:0crwdne6420725:0</msg>
+  <msg name="services_url">crwdns6420726:0crwdne6420726:0</msg>
+  <msg name="failManage">crwdns6420727:0crwdne6420727:0</msg>
+  <msg name="noServices">crwdns6420728:0crwdne6420728:0</msg>
+  <msg name="noMethod">crwdns6420729:0crwdne6420729:0</msg>
+  <msg name="noProperty">crwdns6420730:0crwdne6420730:0</msg>
+  <msg name="badURL">crwdns6420731:0crwdne6420731:0</msg>
 </messagebundle>
