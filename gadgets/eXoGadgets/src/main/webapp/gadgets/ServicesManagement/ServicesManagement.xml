@@ -54,6 +54,7 @@
     <Locale lang="no" messages="locale/no_ALL.xml"/>
     <Locale lang="zh_TW" messages="locale/zh_TW_ALL.xml"/>
     <Locale lang="cs" messages="locale/cs_ALL.xml"/>
+    <Locale lang="uk" messages="locale/uk_ALL.xml"/>
     <Require feature="dynamic-height"/>
     <Require feature="minimessage"/>
     <Require feature="views"/>
