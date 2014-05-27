@@ -26,6 +26,7 @@
   <msg name="description">Περιγραφή</msg>
   <msg name="noDescription">Χωρίς περιγραφή</msg>
   <msg name="method">Μέθοδος</msg>
+  <msg name="property">Ιδιότητα</msg>
   <msg name="parameters">Παράμετροι</msg>
   <msg name="action">Ενέργεια</msg>
   <msg name="value">Τιμή</msg>
