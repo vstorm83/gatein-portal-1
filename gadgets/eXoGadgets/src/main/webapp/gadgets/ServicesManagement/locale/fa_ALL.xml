@@ -26,7 +26,7 @@
   <msg name="description">شرح</msg>
   <msg name="noDescription">بدون شرح</msg>
   <msg name="method">روش</msg>
-  <msg name="property">Property</msg>
+  <msg name="property">ویژگی</msg>
   <msg name="parameters">پارامترها</msg>
   <msg name="action">اقدام</msg>
   <msg name="value">مقدار</msg>
