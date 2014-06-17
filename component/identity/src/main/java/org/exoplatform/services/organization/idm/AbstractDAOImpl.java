@@ -30,6 +30,8 @@ import org.exoplatform.container.ExoContainerContext;
 import org.gatein.common.logging.Logger;
 import org.gatein.common.logging.LoggerFactory;
 import org.gatein.common.transaction.JTAUserTransactionLifecycleService;
+import org.picketlink.idm.api.IdentitySession;
+import org.picketlink.idm.api.Transaction;
 
 /**
  * Abstract superclass for other DAO classes
@@ -63,6 +65,12 @@ public class AbstractDAOImpl {
             } catch (Exception tre) {
                 log.warn("Unable to set Transaction status to be rollback only", tre);
             }
+        } else {
+            orgService.recoverFromIDMError(e);
         }
+    }
+
+    protected IdentitySession getIdentitySession() throws Exception {
+        return service_.getIdentitySession();
     }
 }
