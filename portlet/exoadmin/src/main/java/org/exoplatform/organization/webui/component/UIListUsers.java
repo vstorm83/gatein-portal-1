@@ -122,7 +122,6 @@ public class UIListUsers extends UISearch {
 
         UIConfirmation uiConfirmation = addChild(UIConfirmation.class, null, null);
         uiConfirmation.setCaller(this);
-        createActionConfirms(uiConfirmation);
     }
 
     /**
@@ -201,6 +200,7 @@ public class UIListUsers extends UISearch {
     public void showConfirmWindow(String message) {
         UIConfirmation uiConfirmation = getChild(UIConfirmation.class);
         uiConfirmation.setMessage(message);
+        createActionConfirms(uiConfirmation);
         ((WebuiRequestContext) WebuiRequestContext.getCurrentInstance()).addUIComponentToUpdateByAjax(uiConfirmation);
     }
 
