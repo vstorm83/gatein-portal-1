@@ -120,6 +120,7 @@
     <connection>scm:git:git://github.com/exoplatform/gatein-portal.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/gatein-portal.git</developerConnection>
     <url>https://github.com/exoplatform/gatein-portal</url>
+    <tag>HEAD</tag>
   </scm>
 
   <modules>
