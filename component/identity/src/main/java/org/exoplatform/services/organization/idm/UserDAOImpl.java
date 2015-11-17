@@ -210,13 +210,20 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         if (broadcast)
             preSetEnabled(foundUser);
 
-        Attribute[] attrs = new Attribute[] { new SimpleAttribute(USER_ENABLED, String.valueOf(enabled)) };
-
         AttributesManager am = session.getAttributesManager();
-        try {
-            am.updateAttributes(userName, attrs);
-        } catch (Exception e) {
-            handleException("Cannot update enabled status for user: " + userName + "; ", e);
+        if(enabled) {
+          try {
+              am.removeAttributes(userName, new String[]{USER_ENABLED});
+          } catch (Exception e) {
+              handleException("Cannot update enabled status for user: " + userName + "; ", e);
+          }
+        } else {
+          Attribute[] attrs = new Attribute[] { new SimpleAttribute(USER_ENABLED, String.valueOf(enabled)) };
+          try {
+              am.updateAttributes(userName, attrs);
+          } catch (Exception e) {
+              handleException("Cannot update enabled status for user: " + userName + "; ", e);
+          }
         }
 
         if (getIntegrationCache() != null) {
@@ -315,7 +322,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
         boolean enabledOnly = filterDisabledUsersInQueries();
         if (enabledOnly) {
-            qb = addDisabledUserFilter(qb);
+            qb = addEnabledUserFilter(qb);
         }
         return new LazyPageList<User>(new IDMUserListAccess(qb, pageSize, true, enabledOnly ? UserStatus.ENABLED : UserStatus.DISABLED), pageSize);
     }
@@ -331,22 +338,22 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         }
 
         UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
-        if (disableUserActived()) {
-            switch (userStatus) {
-                case DISABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
-                    }
-                    break;
-                case ANY:
-                    break;
-                case ENABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
-                    }
-                    break;
-            }
+      if (disableUserActived()) {
+        switch (userStatus) {
+            case DISABLED:
+                if (filterDisabledUsersInQueries()) {
+                    qb = addDisabledUserFilter(qb);
+                }
+                break;
+            case ANY:
+                break;
+            case ENABLED:
+                if (filterDisabledUsersInQueries()) {
+                    qb = addEnabledUserFilter(qb);
+                }
+                break;
         }
+      }
         return new IDMUserListAccess(qb, 20, !countPaginatedUsers(), userStatus);
     }
 
@@ -491,20 +498,20 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         }
 
         if (disableUserActived()) {
-            switch (userStatus) {
-                case DISABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
-                    }
-                    break;
-                case ANY:
-                    break;
-                case ENABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
-                    }
-                    break;
-            }            
+        switch (userStatus) {
+            case DISABLED:
+                if (filterDisabledUsersInQueries()) {
+                    qb = addDisabledUserFilter(qb);
+                }
+                break;
+            case ANY:
+                break;
+            case ENABLED:
+                if (filterDisabledUsersInQueries()) {
+                    qb = addEnabledUserFilter(qb);
+                }
+                break;
+        }
         }
 
         if (q.getUserName() == null && q.getEmail() == null && q.getFirstName() == null && q.getLastName() == null) {
@@ -609,20 +616,20 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         qb.addRelatedGroup(jbidGroup);
 
         if (disableUserActived()) {
-            switch (userStatus) {
-                case DISABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
-                    }
-                    break;
-                case ANY:
-                    break;
-                case ENABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
-                    }
-                    break;
-            }
+        switch (userStatus) {
+            case DISABLED:
+                if (filterDisabledUsersInQueries()) {
+                    qb = addDisabledUserFilter(qb);
+                }
+                break;
+            case ANY:
+                break;
+            case ENABLED:
+                if (filterDisabledUsersInQueries()) {
+                    qb = addEnabledUserFilter(qb);
+                }
+                break;
+        }
         }
 
         return new IDMUserListAccess(qb, 20, false, userStatus);
@@ -696,9 +703,9 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
                 removeDisplayNameIfNeeded(am, user);
             }
 
-            if (isNew && disableUserActived()) {
-                attributes.add(new SimpleAttribute(USER_ENABLED, Boolean.TRUE.toString()));
-            }
+           // if (isNew && disableUserActived()) {
+           //     attributes.add(new SimpleAttribute(USER_ENABLED, Boolean.TRUE.toString()));
+           // }
         } else {
             log.warn("User is of class " + user.getClass() + " which is not instanceof " + UserImpl.class);
         }
@@ -831,8 +838,8 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             if (attrs.containsKey(USER_PASSWORD)) {
                 user.setPassword(attrs.get(USER_PASSWORD).getValue().toString());
             }
-            if (attrs.containsKey(USER_ENABLED) && disableUserActived()) {
-                ((UserImpl) user).setEnabled(Boolean.parseBoolean(attrs.get(USER_ENABLED).getValue().toString()));
+            if (attrs.containsKey(USER_ENABLED) && disableUserActived() && attrs.get(USER_ENABLED).getValue() != null) {
+              ((UserImpl) user).setEnabled(Boolean.parseBoolean(attrs.get(USER_ENABLED).getValue().toString()));
             }
         }
     }
@@ -872,11 +879,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         }
     }
 
-    private UserQueryBuilder addDisabledUserFilter(UserQueryBuilder qb) throws Exception {
-        return qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.TRUE.toString()});
+    private UserQueryBuilder addEnabledUserFilter(UserQueryBuilder qb) throws Exception {
+        return qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {});
     }
 
-    private UserQueryBuilder addEnabledUserFilter(UserQueryBuilder qb) throws Exception {
+    private UserQueryBuilder addDisabledUserFilter(UserQueryBuilder qb) throws Exception {
         return qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.FALSE.toString()});
     }
 
