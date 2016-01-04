@@ -22,13 +22,10 @@ package org.exoplatform.portal.application;
 import java.util.List;
 import java.util.Locale;
 import java.util.ServiceLoader;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.exoplatform.commons.utils.I18N;
-import org.exoplatform.commons.utils.Safe;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.portal.config.DataStorage;
 import org.exoplatform.portal.config.StaleModelException;
@@ -203,8 +200,8 @@ public class PortalRequestHandler extends WebRequestHandler {
             log.error("Error while handling request", NonStaleModelEx);
         } finally {
 
-            // We close the writer here once and for all
-            Safe.close(context.getWriter());
+            // We flush the writer here for all
+            context.getWriter().flush();
 
             //
             try {

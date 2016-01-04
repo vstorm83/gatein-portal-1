@@ -110,7 +110,6 @@ public class PortalController extends AbstractHttpServlet {
             throw new ServletException(t);
         }
     }
-
     /**
      * @see org.exoplatform.container.web.AbstractHttpServlet#requirePortalEnvironment()
      */
