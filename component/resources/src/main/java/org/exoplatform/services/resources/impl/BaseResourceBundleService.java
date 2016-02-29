@@ -22,34 +22,21 @@ package org.exoplatform.services.resources.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
+
+import org.picocontainer.Startable;
 
 import org.exoplatform.commons.cache.future.FutureCache;
 import org.exoplatform.commons.cache.future.FutureExoCache;
 import org.exoplatform.commons.cache.future.Loader;
 import org.exoplatform.commons.utils.IOUtil;
 import org.exoplatform.commons.utils.MapResourceBundle;
-import org.exoplatform.commons.utils.PageList;
 import org.exoplatform.commons.utils.PropertyManager;
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.services.cache.ExoCache;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.resources.ExoResourceBundle;
-import org.exoplatform.services.resources.IdentityResourceBundle;
-import org.exoplatform.services.resources.LocaleConfig;
-import org.exoplatform.services.resources.LocaleConfigService;
-import org.exoplatform.services.resources.PropertiesClassLoader;
-import org.exoplatform.services.resources.Query;
-import org.exoplatform.services.resources.ResourceBundleData;
-import org.exoplatform.services.resources.ResourceBundleService;
-import org.picocontainer.Startable;
+import org.exoplatform.services.resources.*;
 
 /**
  * Created by The eXo Platform SAS Mar 9, 2007
@@ -58,9 +45,7 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
 
     protected Log log_;
 
-    protected volatile List<String> classpathResources_;
-
-    protected volatile String[] portalResourceBundleNames_;
+    protected volatile List<String> resourceBundleNames_;
 
     protected LocaleConfigService localeService_;
 
@@ -81,16 +66,12 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
 
     @SuppressWarnings("unchecked")
     protected void initParams(InitParams params) {
-        classpathResources_ = params.getValuesParam("classpath.resources").getValues();
+        resourceBundleNames_ = params.getValuesParam("classpath.resources").getValues();
 
         // resources name can use for portlets
-        List prnames = params.getValuesParam("portal.resource.names").getValues();
-        portalResourceBundleNames_ = new String[prnames.size()];
-        for (int i = 0; i < prnames.size(); i++) {
-            portalResourceBundleNames_[i] = (String) prnames.get(i);
-        }
+        resourceBundleNames_.addAll(params.getValuesParam("portal.resource.names").getValues());
 
-        initResources_ = params.getValuesParam("init.resources").getValues();
+        resourceBundleNames_.addAll(params.getValuesParam("init.resources").getValues());
     }
 
     /**
@@ -100,26 +81,26 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
         List<String> classpathResources = plugin.getClasspathResources();
         if (classpathResources != null && !classpathResources.isEmpty()) {
             List<String> result = new ArrayList<String>(classpathResources);
-            if (classpathResources_ != null) {
-                result.addAll(classpathResources_);
+            if (resourceBundleNames_ != null) {
+                result.addAll(resourceBundleNames_);
             }
-            this.classpathResources_ = Collections.unmodifiableList(result);
+            this.resourceBundleNames_ = Collections.unmodifiableList(result);
         }
         List<String> portalResources = plugin.getPortalResources();
         if (portalResources != null && !portalResources.isEmpty()) {
             List<String> result = new ArrayList<String>(portalResources);
-            if (portalResourceBundleNames_ != null) {
-                result.addAll(Arrays.asList(portalResourceBundleNames_));
+            if (resourceBundleNames_ != null) {
+                result.addAll(resourceBundleNames_);
             }
-            this.portalResourceBundleNames_ = (String[]) result.toArray(new String[result.size()]);
+            this.resourceBundleNames_ = Collections.unmodifiableList(result);
         }
         List<String> initResources = plugin.getInitResources();
         if (initResources != null && !initResources.isEmpty()) {
             List<String> result = new ArrayList<String>(initResources);
-            if (initResources_ != null) {
-                result.addAll(initResources_);
+            if (resourceBundleNames_ != null) {
+                result.addAll(resourceBundleNames_);
             }
-            this.initResources_ = Collections.unmodifiableList(result);
+            this.resourceBundleNames_ = Collections.unmodifiableList(result);
         }
     }
 
@@ -129,20 +110,6 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
      * @see org.picocontainer.Startable#start()
      */
     public void start() {
-        PageList pl = null;
-        try {
-            pl = findResourceDescriptions(new Query(null, null));
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot check if a resource already exists", e);
-        }
-        if (pl.getAvailable() > 0)
-            return;
-
-        // init resources
-        List<String> initResources = initResources_;
-        for (String resource : initResources) {
-            initResources(resource, Thread.currentThread().getContextClassLoader());
-        }
     }
 
     /**
@@ -152,67 +119,21 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
     }
 
     public ResourceBundle getResourceBundle(String[] name, Locale locale) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        ClassLoader cl = PortalContainer.getInstance().getPortalClassLoader();
         return getResourceBundle(name, locale, cl);
     }
 
     public ResourceBundle getResourceBundle(String name, Locale locale) {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        ClassLoader cl = PortalContainer.getInstance().getPortalClassLoader();
         return getResourceBundle(name, locale, cl);
     }
 
     public String[] getSharedResourceBundleNames() {
-        return portalResourceBundleNames_;
+        return resourceBundleNames_.toArray(new String[resourceBundleNames_.size()]);
     }
 
     public ResourceBundleData createResourceBundleDataInstance() {
         return new ResourceBundleData();
-    }
-
-    protected boolean isClasspathResource(String name) {
-        if (classpathResources_ == null)
-            return false;
-        for (int i = 0; i < classpathResources_.size(); i++) {
-            String pack = classpathResources_.get(i);
-            if (name.startsWith(pack))
-                return true;
-        }
-        return false;
-    }
-
-    protected void initResources(String baseName, ClassLoader cl) {
-        String name = baseName.replace('.', '/');
-        try {
-            Collection<LocaleConfig> localeConfigs = localeService_.getLocalConfigs();
-            // String defaultLang =
-            // localeService_.getDefaultLocaleConfig().getLanguage();
-            Locale defaultLocale = localeService_.getDefaultLocaleConfig().getLocale();
-
-            for (Iterator<LocaleConfig> iter = localeConfigs.iterator(); iter.hasNext();) {
-                LocaleConfig localeConfig = iter.next();
-                // String language = localeConfig.getLanguage();
-                // String content = getResourceBundleContent(name, language,
-                // defaultLang, cl);
-                Locale locale = localeConfig.getLocale();
-                String language = locale.getLanguage();
-                String country = locale.getCountry();
-                String variant = locale.getVariant();
-
-                String content = getResourceBundleContent(name, locale, defaultLocale, cl);
-                if (content != null) {
-                    // save the content
-                    ResourceBundleData data = new ResourceBundleData();
-                    data.setName(baseName);
-                    data.setLanguage(language);
-                    data.setCountry(country);
-                    data.setVariant(variant);
-                    data.setData(content);
-                    saveResourceBundle(data);
-                }
-            }
-        } catch (Exception ex) {
-            log_.error("Error while reading the resource bundle : " + baseName, ex);
-        }
     }
 
     protected String getResourceBundleContent(String name, String language, String defaultLang, ClassLoader cl)
@@ -353,33 +274,27 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
             id = name + "_" + locale.getLanguage();
         }
 
-        boolean isClasspathResource = isClasspathResource(name);
-        boolean isCacheable = !isClasspathResource || !PropertyManager.isDevelopping();
-        if (isCacheable && isClasspathResource) {
+        boolean isCacheable = !PropertyManager.isDevelopping();
+        if (isCacheable) {
             // Avoid naming collision
             id += "_" + cl.getClass() + "_" + System.identityHashCode(cl);
         }
 
         // Case 1: ResourceBundle of portlets, standard java API is used
-        if (isClasspathResource) {
-            ResourceBundleFromCPContext ctx = new ResourceBundleFromCPContext(name, locale, cl);
-            ResourceBundle result;
-            // Cache classpath resource bundle while running portal in non-dev mode
-            if (isCacheable) {
-                result = getFutureCache().get(ctx, id);
-            } else {
-                result = ctx.get(id);
-            }
-
-            if (ctx.e != null) {
-                // Throw the RuntimeException if it occurs to remain compatible with the old behavior
-                throw ctx.e;
-            } else {
-                return result;
-            }
+        ResourceBundleFromCPContext ctx = new ResourceBundleFromCPContext(name, locale, cl);
+        ResourceBundle result;
+        // Cache classpath resource bundle while running portal in non-dev mode
+        if (isCacheable) {
+            result = getFutureCache().get(ctx, id);
         } else {
-            // Case 2: ResourceBundle of portal
-            return getFutureCache().get(new GetResourceBundleFromDbContext(name, locale), id);
+            result = ctx.get(id);
+        }
+
+        if (ctx.e != null) {
+            // Throw the RuntimeException if it occurs to remain compatible with the old behavior
+            throw ctx.e;
+        } else {
+            return result;
         }
     }
 
@@ -405,8 +320,6 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
         }
         return futureCache_;
     }
-
-    protected abstract ResourceBundle getResourceBundleFromDb(String id, ResourceBundle parent, Locale locale) throws Exception;
 
     /**
      * Generic class defining a context needed to get a ResourceBundle
@@ -472,40 +385,6 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
                 return new ExoResourceBundle(data, parent);
             }
             return null;
-        }
-    }
-
-    /**
-     * The class defining the context required to load a ResourceBundle thanks to the method
-     * <code>getResourceBundleFromDb(String id, ResourceBundle parent, Locale locale)</code>
-     */
-    private class GetResourceBundleFromDbContext extends ResourceBundleContext {
-        private final String name;
-
-        private final Locale locale;
-
-        public GetResourceBundleFromDbContext(String name, Locale locale) {
-            this.name = name;
-            this.locale = locale;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        ResourceBundle get(String id) {
-            ResourceBundle res = null;
-            try {
-                String rootId = name + "_" + localeService_.getDefaultLocaleConfig().getLanguage();
-                ResourceBundle parent = getResourceBundleFromDb(rootId, null, locale);
-                res = getResourceBundleFromDb(id, parent, locale);
-                if (res == null) {
-                    res = parent;
-                }
-            } catch (Exception ex) {
-                log_.error("Error: " + id, ex);
-            }
-            return res;
         }
     }
 

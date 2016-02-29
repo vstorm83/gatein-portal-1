@@ -22,6 +22,9 @@ package org.exoplatform.portal.pc;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.exoplatform.commons.utils.MapResourceBundle;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.resources.ResourceBundleService;
 import org.gatein.common.i18n.ResourceBundleFactory;
@@ -64,22 +67,24 @@ public class ExoResourceBundleFactory implements ResourceBundleFactory {
         }
 
         //
-        ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader portalClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(classLoader);
             PortalContainer portalContainer = PortalContainer.getInstance();
             if (portalContainer != null) {
                 ResourceBundleService resourceBundleService = (ResourceBundleService) portalContainer
                         .getComponentInstance(ResourceBundleService.class);
                 if (resourceBundleService != null) {
+                    // get all portal bundle resources
                     String[] portalBundles = resourceBundleService.getSharedResourceBundleNames();
+                    ResourceBundle portalResourceBundle = resourceBundleService.getResourceBundle(portalBundles, locale, portalClassLoader);
+
+                    // merge the portlet resource bundle
                     if (baseName != null) {
-                        String[] bundles = new String[portalBundles.length + 1];
-                        System.arraycopy(portalBundles, 0, bundles, 0, portalBundles.length);
-                        bundles[portalBundles.length] = baseName;
-                        portalBundles = bundles;
+                        ResourceBundle portletResourceBundle = resourceBundleService.getResourceBundle(baseName, locale, classLoader);
+                        ((MapResourceBundle) portalResourceBundle).merge(portletResourceBundle);
                     }
-                    return resourceBundleService.getResourceBundle(portalBundles, locale);
+
+                    return portalResourceBundle;
                 }
             }
 
@@ -89,11 +94,9 @@ public class ExoResourceBundleFactory implements ResourceBundleFactory {
             }
         } catch (Exception ignore) {
             // Perhaps log that as trace
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCL);
         }
 
         //
-        return null;
+        return new MapResourceBundle(locale);
     }
 }

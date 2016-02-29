@@ -110,13 +110,4 @@ public class SimpleResourceBundleService extends BaseResourceBundleService {
             }
         }, 20);
     }
-
-    @Override
-    protected ResourceBundle getResourceBundleFromDb(String id, ResourceBundle parent, Locale locale) throws Exception {
-        ResourceBundleData data = getResourceBundleData(id);
-        if (data == null) {
-            return null;
-        }
-        return new MapResourceBundle(new ExoResourceBundle(data, parent), locale);
-    }
 }

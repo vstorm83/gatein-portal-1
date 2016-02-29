@@ -126,6 +126,7 @@ public class TestResourceBundleService extends AbstractKernelTest {
         assertEquals("base_en.properties", res.getString("base_en"));
     }
 
+    /*
     public void testResourceBundleServiceUpdate() throws Exception {
         // -------getResourceBundle have loaded from property file to database--------
         String bundle = "portal.locale";
@@ -158,6 +159,7 @@ public class TestResourceBundleService extends AbstractKernelTest {
 
         assertNull(service_.getResourceBundleData(bundle + "_en"));
     }
+    */
 
     private void createResourceBundle(String name, String datas, Locale locale) throws Exception {
         ResourceBundleData data = service_.createResourceBundleDataInstance();
