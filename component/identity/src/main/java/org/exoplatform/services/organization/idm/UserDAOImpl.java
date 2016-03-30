@@ -423,7 +423,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         }
 
         // if only condition is email which is unique then delegate to other method as it will be more efficient
-        if (q.getUserName() == null && q.getEmail() != null && q.getFirstName() == null && q.getLastName() == null) {
+        if (q.getUserName() == null && q.getEmail() != null && q.getFirstName() == null && q.getLastName() == null && q.getMemberhips() == null) {
             final User uniqueUser = findUserByUniqueAttribute(USER_EMAIL, q.getEmail(), userStatus);
 
             if (uniqueUser != null) {
@@ -464,8 +464,8 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
 
         orgService.flush();
 
-        UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
-
+        UserQueryBuilderWrapper qb = new UserQueryBuilderWrapper(service_.getIdentitySession().createUserQueryBuilder());
+        
         if (q.getUserName() != null) {
             //Process username
             String username = q.getUserName();
@@ -489,19 +489,23 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         if (q.getLastName() != null) {
             qb.attributeValuesFilter(UserDAOImpl.USER_LAST_NAME, new String[] { q.getLastName() });
         }
+        
+        if (q.getMemberhips() != null) {
+          qb.addMemberships(q.getMemberhips());
+        }
 
         if (disableUserActived()) {
             switch (userStatus) {
                 case DISABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
+                        addEnabledUserFilter(qb);
                     }
                     break;
                 case ANY:
                     break;
                 case ENABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
+                        addDisabledUserFilter(qb);
                     }
                     break;
             }            
