@@ -126,6 +126,9 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
 
     private List<org.picketlink.idm.api.User> filterByMembership(List<org.picketlink.idm.api.User> users,
                                                                 Set<Membership> memberships) throws Exception {
+      if (memberships == null || memberships.isEmpty()) {
+        return users;
+      }
       List<org.picketlink.idm.api.User> results = new LinkedList<org.picketlink.idm.api.User>();
 
       MembershipHandler msHandler = getOrganizationService().getMembershipHandler();
