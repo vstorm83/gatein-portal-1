@@ -464,7 +464,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
 
         orgService.flush();
 
-        UserQueryBuilderWrapper qb = new UserQueryBuilderWrapper(service_.getIdentitySession().createUserQueryBuilder());
+        UserQueryBuilderWrapper qb = new UserQueryBuilderWrapper(service_.getIdentitySession().createUserQueryBuilder(), getOrgService());
         
         if (q.getUserName() != null) {
             //Process username

@@ -61,7 +61,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
     private User lastExisting;
 
     public IDMUserListAccess(UserQueryBuilder userQueryBuilder, int pageSize, boolean countAll, UserStatus userStatus) {
-        this.userQueryBuilder = userQueryBuilder;
+        this.userQueryBuilder = userQueryBuilder;        
         this.pageSize = pageSize;
         this.countAll = countAll;
         this.userStatus = userStatus;
@@ -87,7 +87,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
             getOrganizationService().flush();
 
             userQueryBuilder.page(index, length);
-            UserQuery query = userQueryBuilder.sort(SortOrder.ASCENDING).createQuery();
+            UserQuery query = userQueryBuilder.sort(SortOrder.ASCENDING).createQuery();            
             users = getIDMService().getIdentitySession().list(query);
             if (userQueryBuilder instanceof UserQueryBuilderWrapper) {
               users = filterByMembership(users, ((UserQueryBuilderWrapper)userQueryBuilder).getMemberships());

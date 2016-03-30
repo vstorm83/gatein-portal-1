@@ -212,7 +212,7 @@ public class IntegrationCache extends AbstractInfinispanCacheProvider {
 
         sb.append(query.getEmail()).append(SEP).append(query.getFirstName()).append(SEP).append(query.getLastName())
                 .append(SEP).append(query.getUserName()).append(SEP).append(query.getFromLoginDate()).append(SEP)
-                .append(query.getToLoginDate()).append(SEP).append(userStatus.name()).append(SEP);
+                .append(query.getToLoginDate()).append(SEP).append(userStatus.name()).append(SEP).append(query.getMemberhips());
 
         return sb.toString();
     }

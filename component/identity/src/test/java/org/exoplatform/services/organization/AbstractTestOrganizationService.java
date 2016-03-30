@@ -23,22 +23,31 @@
 
 package org.exoplatform.services.organization;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.exoplatform.commons.utils.PageList;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.services.organization.idm.Config;
+import org.exoplatform.services.organization.idm.MembershipImpl;
 import org.exoplatform.services.organization.idm.PicketLinkIDMOrganizationServiceImpl;
 import org.exoplatform.services.organization.idm.UserDAOImpl;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Created by The eXo Platform SAS Author : Hoa Pham hoapham@exoplatform.com,phamvuxuanhoa@yahoo.com Oct 27, 2005
@@ -264,6 +273,29 @@ public class AbstractTestOrganizationService {
             user2.setLastName("foobar");
             user2.setEmail("foobar@foobar.com");
             ud.createUser(user2, true);
+            
+            Group group = groupHandler_.createGroupInstance();
+            group.setGroupName("testGroup");
+            groupHandler_.addChild(null, group, true);
+            MembershipType mt = mtHandler_.createMembershipTypeInstance();
+            mt.setName("testMT");
+            mt.setOwner("exo");
+            mt.setDescription("test");
+            mt = mtHandler_.createMembershipType(mt, true);
+            membershipHandler_.linkMembership(user1, group, mt, true);
+            
+            MembershipImpl m = new MembershipImpl();
+            m.setUserName(user1.getUserName());            
+            m.setGroupId(group.getId());
+            m.setMembershipType(mt.getName());            
+            
+            Set<Membership> ms = new HashSet<Membership>();
+            ms.add(m);
+            Query queryMS = new Query();
+            queryMS.setMemberhips(ms);
+            queryMS.setDisplayName("foo");
+            List<User> userWithMS = ud.findUsers(queryMS).getAll();
+            assertEquals(1, userWithMS.size());            
 
             Query query = new Query();
             List<User> users = ud.findUsers(query).getAll();
@@ -296,8 +328,16 @@ public class AbstractTestOrganizationService {
             assertEquals("foobar", users.get(0).getUserName());
 
             // Cleanup after test
+            RequestLifeCycle.end();
+            RequestLifeCycle.begin((ComponentRequestLifecycle) service_);
             ud.removeUser("foo", true);
             ud.removeUser("foobar", true);
+            
+//            membershipHandler_.removeMembershipByUser(Benj, true);
+//            userHandler_.removeUser(Benj, true);
+//            groupHandler_.removeGroup(group2, true);
+//            mtHandler_.removeMembershipType("membershipType2", true);
+//            mtHandler_.removeMembershipType("membershipType3", true);
         }
     }
 
