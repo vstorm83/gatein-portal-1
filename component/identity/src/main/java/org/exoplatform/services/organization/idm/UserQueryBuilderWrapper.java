@@ -12,12 +12,12 @@ import org.picketlink.idm.api.query.UserQueryBuilder;
 
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.Membership;
+import org.exoplatform.services.organization.Query.MembershipQuery;
 
 public class UserQueryBuilderWrapper implements UserQueryBuilder {
   private UserQueryBuilder delegate;
   
-  private Set<Membership> memberships = new LinkedHashSet<Membership>();
+  private Set<MembershipQuery> membershipQuery = new LinkedHashSet<MembershipQuery>();
   
   private static Log LOG = ExoLogger.getExoLogger(UserQueryBuilderWrapper.class);
   
@@ -108,13 +108,13 @@ public class UserQueryBuilderWrapper implements UserQueryBuilder {
     return delegate.withUserId(id);
   }
 
-  public Set<Membership> getMemberships() {
-    return memberships;
+  public Set<MembershipQuery> getMembershipQuery() {
+    return membershipQuery;
   }
 
-  public void addMemberships(Set<Membership> memberships) {
+  public void addMembershipQuery(Set<MembershipQuery> membershipQuery) {
     try {
-      for (Membership mem : memberships) {      
+      for (MembershipQuery mem : membershipQuery) {      
         Group group = service.getJBIDMGroup(mem.getGroupId());
         if (group != null) {              
           this.delegate.addRelatedGroup(group.getKey());
@@ -125,7 +125,7 @@ public class UserQueryBuilderWrapper implements UserQueryBuilder {
     } catch (Exception ex) {
       LOG.error("Can't add filter by membership", ex);
     }
-    this.memberships.addAll(memberships);
+    this.membershipQuery.addAll(membershipQuery);
   }
   
 }

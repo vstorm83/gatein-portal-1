@@ -44,8 +44,8 @@ import org.exoplatform.commons.utils.PageList;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.container.component.RequestLifeCycle;
+import org.exoplatform.services.organization.Query.MembershipQuery;
 import org.exoplatform.services.organization.idm.Config;
-import org.exoplatform.services.organization.idm.MembershipImpl;
 import org.exoplatform.services.organization.idm.PicketLinkIDMOrganizationServiceImpl;
 import org.exoplatform.services.organization.idm.UserDAOImpl;
 
@@ -284,15 +284,12 @@ public class AbstractTestOrganizationService {
             mt = mtHandler_.createMembershipType(mt, true);
             membershipHandler_.linkMembership(user1, group, mt, true);
             
-            MembershipImpl m = new MembershipImpl();
-            m.setUserName(user1.getUserName());            
-            m.setGroupId(group.getId());
-            m.setMembershipType(mt.getName());            
+            MembershipQuery m = new MembershipQuery(group.getId(), mt.getName());      
             
-            Set<Membership> ms = new HashSet<Membership>();
+            Set<MembershipQuery> ms = new HashSet<MembershipQuery>();
             ms.add(m);
             Query queryMS = new Query();
-            queryMS.setMemberhips(ms);
+            queryMS.setMemberhipQuery(ms);
             queryMS.setDisplayName("foo");
             List<User> userWithMS = ud.findUsers(queryMS).getAll();
             assertEquals(1, userWithMS.size());            
@@ -333,11 +330,10 @@ public class AbstractTestOrganizationService {
             ud.removeUser("foo", true);
             ud.removeUser("foobar", true);
             
-//            membershipHandler_.removeMembershipByUser(Benj, true);
-//            userHandler_.removeUser(Benj, true);
-//            groupHandler_.removeGroup(group2, true);
-//            mtHandler_.removeMembershipType("membershipType2", true);
-//            mtHandler_.removeMembershipType("membershipType3", true);
+            membershipHandler_.removeMembershipByUser(user1.getUserName(), true);
+            userHandler_.removeUser(user1.getUserName(), true);
+            groupHandler_.removeGroup(group, true);
+            mtHandler_.removeMembershipType(mt.getName(), true);
         }
     }
 
