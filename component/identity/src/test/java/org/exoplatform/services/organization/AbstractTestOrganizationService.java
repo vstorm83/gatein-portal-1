@@ -290,7 +290,7 @@ public class AbstractTestOrganizationService {
             ms.add(m);
             Query queryMS = new Query();
             queryMS.setMemberhipQuery(ms);
-            queryMS.setDisplayName("foo");
+            queryMS.setDisplayName("*foo*");
             List<User> userWithMS = ud.findUsers(queryMS).getAll();
             assertEquals(1, userWithMS.size());            
 
@@ -334,6 +334,35 @@ public class AbstractTestOrganizationService {
             userHandler_.removeUser(user1.getUserName(), true);
             groupHandler_.removeGroup(group, true);
             mtHandler_.removeMembershipType(mt.getName(), true);
+        }
+    }
+
+    @Test
+    public void testFindUserByName() throws Exception {
+        if (userHandler_ instanceof UserDAOImpl) {
+            UserDAOImpl ud = (UserDAOImpl) userHandler_;
+            User user1 = ud.createUserInstance("foo");
+            user1.setFirstName("foo");
+            user1.setLastName("bar");
+            user1.setEmail("foo@bar.com");
+            ud.createUser(user1, true);
+
+            User user2 = ud.createUserInstance("foobar");
+            user2.setFirstName("foo bar");
+            user2.setLastName("foo bar");
+            user2.setEmail("foobar@foobar.com");
+            ud.createUser(user2, true);
+
+            Query queryMS = new Query();
+            queryMS.setDisplayName("*foo*");
+            List<User> userWithMS = ud.findUsers(queryMS).getAll();
+            assertEquals(2, userWithMS.size());
+
+            // Cleanup after test
+            RequestLifeCycle.end();
+            RequestLifeCycle.begin((ComponentRequestLifecycle) service_);
+            ud.removeUser("foo", true);
+            ud.removeUser("foobar", true);
         }
     }
 

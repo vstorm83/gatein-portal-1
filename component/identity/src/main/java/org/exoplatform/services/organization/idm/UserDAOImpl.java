@@ -489,7 +489,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         if (q.getLastName() != null) {
             qb.attributeValuesFilter(UserDAOImpl.USER_LAST_NAME, new String[] { q.getLastName() });
         }
-        
+
+        if (q.getDisplayName() != null) {
+            qb.attributeValuesFilter(UserDAOImpl.USER_DISPLAY_NAME, new String[] {q.getDisplayName()});
+        }
+
         if (q.getMemberhipQuery() != null) {
           qb.addMembershipQuery(q.getMemberhipQuery());
         }
