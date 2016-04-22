@@ -390,6 +390,12 @@
             <field name="distributed">
               <boolean>true</boolean>
             </field>
+            <field name="replicated">
+              <boolean>true</boolean>
+            </field>
+            <field name="avoidValueReplication">
+              <boolean>true</boolean>
+            </field>
           </object>
         </object-param>
       </init-params>
