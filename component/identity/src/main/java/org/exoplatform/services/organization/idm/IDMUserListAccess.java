@@ -33,10 +33,10 @@ import org.picketlink.idm.api.query.UserQueryBuilder;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.MembershipHandler;
 import org.exoplatform.services.organization.MembershipTypeHandler;
 import org.exoplatform.services.organization.OrganizationService;
-import org.exoplatform.services.organization.Query.MembershipQuery;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserStatus;
 import org.exoplatform.services.organization.impl.UserImpl;
@@ -91,7 +91,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
             UserQuery query = userQueryBuilder.sort(SortOrder.ASCENDING).createQuery();            
             users = getIDMService().getIdentitySession().list(query);
             if (userQueryBuilder instanceof UserQueryBuilderWrapper) {
-              users = filterByMembership(users, ((UserQueryBuilderWrapper)userQueryBuilder).getMembershipQuery());
+              users = filterByMembership(users, ((UserQueryBuilderWrapper)userQueryBuilder).getMembership());
             }
         } else {
             users = fullResults.subList(index, index + length);
@@ -126,7 +126,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
     }
 
     private List<org.picketlink.idm.api.User> filterByMembership(List<org.picketlink.idm.api.User> users,
-                                                                Set<MembershipQuery> memberships) throws Exception {
+                                                                Set<Membership> memberships) throws Exception {
       if (memberships == null || memberships.isEmpty()) {
         return users;
       }
@@ -134,7 +134,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
 
       MembershipHandler msHandler = getOrganizationService().getMembershipHandler();
       for (org.picketlink.idm.api.User u : users) {
-        for (MembershipQuery m : memberships) {
+        for (Membership m : memberships) {
           if (MembershipTypeHandler.ANY_MEMBERSHIP_TYPE.equals(m.getMembershipType())) {
             if (msHandler.findMembershipsByUserAndGroup(u.getId(), m.getGroupId()).size() > 0) {
               results.add(u);
@@ -174,7 +174,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
                 UserQuery query = userQueryBuilder.sort(SortOrder.ASCENDING).createQuery();
                 fullResults = getIDMService().getIdentitySession().list(query);
                 if (userQueryBuilder instanceof UserQueryBuilderWrapper) {
-                  fullResults = filterByMembership(fullResults, ((UserQueryBuilderWrapper)userQueryBuilder).getMembershipQuery());
+                  fullResults = filterByMembership(fullResults, ((UserQueryBuilderWrapper)userQueryBuilder).getMembership());
                 }
                 result = fullResults.size();
             }

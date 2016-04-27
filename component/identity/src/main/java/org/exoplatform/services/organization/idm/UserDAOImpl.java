@@ -423,7 +423,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         }
 
         // if only condition is email which is unique then delegate to other method as it will be more efficient
-        if (q.getUserName() == null && q.getEmail() != null && q.getFirstName() == null && q.getLastName() == null && q.getMemberhipQuery() == null) {
+        if (q.getUserName() == null && q.getEmail() != null && q.getFirstName() == null && q.getLastName() == null && q.getMemberships() == null) {
             final User uniqueUser = findUserByUniqueAttribute(USER_EMAIL, q.getEmail(), userStatus);
 
             if (uniqueUser != null) {
@@ -494,8 +494,8 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             qb.attributeValuesFilter(UserDAOImpl.USER_DISPLAY_NAME, new String[] {q.getDisplayName()});
         }
 
-        if (q.getMemberhipQuery() != null) {
-          qb.addMembershipQuery(q.getMemberhipQuery());
+        if (q.getMemberships() != null) {
+          qb.addMembership(q.getMemberships());
         }
 
         if (disableUserActived()) {

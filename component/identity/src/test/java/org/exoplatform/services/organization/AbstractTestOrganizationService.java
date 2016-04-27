@@ -44,10 +44,10 @@ import org.exoplatform.commons.utils.PageList;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.component.ComponentRequestLifecycle;
 import org.exoplatform.container.component.RequestLifeCycle;
-import org.exoplatform.services.organization.Query.MembershipQuery;
 import org.exoplatform.services.organization.idm.Config;
 import org.exoplatform.services.organization.idm.PicketLinkIDMOrganizationServiceImpl;
 import org.exoplatform.services.organization.idm.UserDAOImpl;
+import org.exoplatform.services.organization.impl.MembershipImpl;
 
 /**
  * Created by The eXo Platform SAS Author : Hoa Pham hoapham@exoplatform.com,phamvuxuanhoa@yahoo.com Oct 27, 2005
@@ -283,13 +283,15 @@ public class AbstractTestOrganizationService {
             mt.setDescription("test");
             mt = mtHandler_.createMembershipType(mt, true);
             membershipHandler_.linkMembership(user1, group, mt, true);
+                  
+            MembershipImpl m = new MembershipImpl();
+            m.setGroupId(group.getId());
+            m.setMembershipType(mt.getName());
             
-            MembershipQuery m = new MembershipQuery(group.getId(), mt.getName());      
-            
-            Set<MembershipQuery> ms = new HashSet<MembershipQuery>();
+            Set<Membership> ms = new HashSet<Membership>();
             ms.add(m);
             Query queryMS = new Query();
-            queryMS.setMemberhipQuery(ms);
+            queryMS.setMemberships(ms);
             queryMS.setDisplayName("*foo*");
             List<User> userWithMS = ud.findUsers(queryMS).getAll();
             assertEquals(1, userWithMS.size());            
