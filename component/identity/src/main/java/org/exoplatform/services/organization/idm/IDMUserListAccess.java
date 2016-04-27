@@ -29,7 +29,6 @@ import org.gatein.common.logging.Logger;
 import org.gatein.common.logging.LoggerFactory;
 import org.picketlink.idm.api.SortOrder;
 import org.picketlink.idm.api.query.UserQuery;
-import org.picketlink.idm.api.query.UserQueryBuilder;
 
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.container.ExoContainerContext;
@@ -47,7 +46,7 @@ import org.exoplatform.services.organization.impl.UserImpl;
 public class IDMUserListAccess implements ListAccess<User>, Serializable {
     private static Logger log = LoggerFactory.getLogger(IDMUserListAccess.class);
 
-    private final UserQueryBuilder userQueryBuilder;
+    private final EnhancedUserQueryBuilder userQueryBuilder;
 
     private final int pageSize;
 
@@ -61,7 +60,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
 
     private User lastExisting;
 
-    public IDMUserListAccess(UserQueryBuilder userQueryBuilder, int pageSize, boolean countAll, UserStatus userStatus) {
+    public IDMUserListAccess(EnhancedUserQueryBuilder userQueryBuilder, int pageSize, boolean countAll, UserStatus userStatus) {
         this.userQueryBuilder = userQueryBuilder;        
         this.pageSize = pageSize;
         this.countAll = countAll;
@@ -90,9 +89,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
             userQueryBuilder.page(index, length);
             UserQuery query = userQueryBuilder.sort(SortOrder.ASCENDING).createQuery();            
             users = getIDMService().getIdentitySession().list(query);
-            if (userQueryBuilder instanceof UserQueryBuilderWrapper) {
-              users = filterByMembership(users, ((UserQueryBuilderWrapper)userQueryBuilder).getMembership());
-            }
+            users = filterByMembership(users, userQueryBuilder.getMembership());
         } else {
             users = fullResults.subList(index, index + length);
         }
@@ -138,10 +135,12 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
           if (MembershipTypeHandler.ANY_MEMBERSHIP_TYPE.equals(m.getMembershipType())) {
             if (msHandler.findMembershipsByUserAndGroup(u.getId(), m.getGroupId()).size() > 0) {
               results.add(u);
+              break;
             }
           } else {
             if (msHandler.findMembershipByUserGroupAndType(u.getId(), m.getGroupId(), m.getMembershipType()) != null) {
               results.add(u);
+              break;
             }
           }
         }
@@ -173,9 +172,7 @@ public class IDMUserListAccess implements ListAccess<User>, Serializable {
                 userQueryBuilder.page(0, 0);
                 UserQuery query = userQueryBuilder.sort(SortOrder.ASCENDING).createQuery();
                 fullResults = getIDMService().getIdentitySession().list(query);
-                if (userQueryBuilder instanceof UserQueryBuilderWrapper) {
-                  fullResults = filterByMembership(fullResults, ((UserQueryBuilderWrapper)userQueryBuilder).getMembership());
-                }
+                fullResults = filterByMembership(fullResults, userQueryBuilder.getMembership());
                 result = fullResults.size();
             }
 

@@ -32,6 +32,7 @@ import java.util.Set;
 import org.exoplatform.commons.utils.LazyPageList;
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.services.organization.DisabledUserException;
+import org.exoplatform.services.organization.Membership;
 import org.exoplatform.services.organization.Query;
 import org.exoplatform.services.organization.User;
 import org.exoplatform.services.organization.UserEventListener;
@@ -41,6 +42,7 @@ import org.exoplatform.services.organization.impl.UserImpl;
 import org.gatein.common.logging.LogLevel;
 import org.picketlink.idm.api.Attribute;
 import org.picketlink.idm.api.AttributesManager;
+import org.picketlink.idm.api.Group;
 import org.picketlink.idm.api.IdentitySession;
 import org.picketlink.idm.api.query.UserQueryBuilder;
 import org.picketlink.idm.impl.api.SimpleAttribute;
@@ -312,7 +314,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             Tools.logMethodIn(log, LogLevel.TRACE, "getUserPagetList", new Object[] { "pageSize", pageSize });
         }
 
-        UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
+        EnhancedUserQueryBuilder qb = new EnhancedUserQueryBuilderImpl(service_.getIdentitySession().createUserQueryBuilder());
         boolean enabledOnly = filterDisabledUsersInQueries();
         if (enabledOnly) {
             qb = addDisabledUserFilter(qb);
@@ -330,7 +332,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             Tools.logMethodIn(log, LogLevel.TRACE, "findAllUsers", new Object[] { "userStatus", userStatus });
         }
 
-        UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
+        EnhancedUserQueryBuilder qb = new EnhancedUserQueryBuilderImpl(service_.getIdentitySession().createUserQueryBuilder());
         if (disableUserActived()) {
             switch (userStatus) {
                 case DISABLED:
@@ -464,7 +466,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
 
         orgService.flush();
 
-        UserQueryBuilderWrapper qb = new UserQueryBuilderWrapper(service_.getIdentitySession().createUserQueryBuilder(), getOrgService());
+        EnhancedUserQueryBuilder qb = new EnhancedUserQueryBuilderImpl(service_.getIdentitySession().createUserQueryBuilder());
         
         if (q.getUserName() != null) {
             //Process username
@@ -496,6 +498,18 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
 
         if (q.getMemberships() != null) {
           qb.addMembership(q.getMemberships());
+          try {
+            for (Membership mem : q.getMemberships()) {      
+              Group group = orgService.getJBIDMGroup(mem.getGroupId());
+              if (group != null) {              
+                qb.addRelatedGroup(group.getKey());
+              } else {
+                log.warn("Can't not find picketlink group with groupId: " + mem.getGroupId());
+              }
+            }
+          } catch (Exception ex) {
+            log.error("Can't add filter by membership", ex);
+          }
         }
 
         if (disableUserActived()) {
@@ -588,7 +602,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             Tools.logMethodIn(log, LogLevel.TRACE, "findUsersByGroupId", new Object[] { groupId, userStatus });
         }
 
-        UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
+        EnhancedUserQueryBuilder qb = new EnhancedUserQueryBuilderImpl(service_.getIdentitySession().createUserQueryBuilder());
 
         org.picketlink.idm.api.Group jbidGroup = null;
         try {
@@ -880,12 +894,14 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         }
     }
 
-    private UserQueryBuilder addDisabledUserFilter(UserQueryBuilder qb) throws Exception {
-        return qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.TRUE.toString()});
+    private EnhancedUserQueryBuilder addDisabledUserFilter(EnhancedUserQueryBuilder qb) throws Exception {
+        qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.TRUE.toString()});
+        return qb;
     }
 
-    private UserQueryBuilder addEnabledUserFilter(UserQueryBuilder qb) throws Exception {
-        return qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.FALSE.toString()});
+    private EnhancedUserQueryBuilder addEnabledUserFilter(EnhancedUserQueryBuilder qb) throws Exception {
+        qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.FALSE.toString()});
+        return qb;
     }
 
     private boolean countPaginatedUsers() {
