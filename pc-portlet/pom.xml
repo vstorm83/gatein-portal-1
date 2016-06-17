@@ -1,0 +1,77 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.gatein.portal</groupId>
+      <artifactId>exo.portal.parent</artifactId>
+      <version>4.4.x-PLF-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.gatein.pc</groupId>
+   <artifactId>pc-portlet</artifactId>
+   <packaging>jar</packaging>
+   <name>GateIn - Portlet Container (pc)</name>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.gatein.pc</groupId>
+         <artifactId>pc-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>javax.servlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.portlet</groupId>
+         <artifactId>portlet-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet.jsp</groupId>
+         <artifactId>jsp-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>sun-jaxb</groupId>
+         <artifactId>jaxb-api</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.ccpp</groupId>
+         <artifactId>ccpp</artifactId>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.staxnav</groupId>
+         <artifactId>staxnav.core</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-simple</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>test-jar</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+
+</project>

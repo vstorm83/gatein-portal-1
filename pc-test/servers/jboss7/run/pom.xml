@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.gatein.pc</groupId>
+      <artifactId>pc-test-servers-jboss7</artifactId>
+      <version>4.4.x-PLF-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>pc-test-servers-jboss7-run</artifactId>
+   <packaging>jar</packaging>
+   <name>GateIn - Portlet Container (test - run JBoss7)</name>
+
+   <dependencies>
+
+      <!-- -->
+      <dependency>
+         <groupId>org.gatein.pc</groupId>
+         <artifactId>pc-test-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.gatein.pc</groupId>
+         <artifactId>pc-test-core</artifactId>
+         <type>test-jar</type>
+         <classifier>test-sources</classifier>
+      </dependency>
+
+      <!-- Arquillian container -->
+      <dependency>
+          <groupId>org.jboss.spec</groupId>
+          <artifactId>jboss-javaee-6.0</artifactId>
+          <version>1.0.0.Final</version>
+          <type>pom</type>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.jboss.as</groupId>
+          <artifactId>jboss-as-arquillian-container-managed</artifactId>
+          <version>7.1.1.Final</version>
+          <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+  <build>
+
+    <!-- -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-test</id>
+              <configuration>
+                <useSystemClassLoader>false</useSystemClassLoader>
+                <includes>
+                  <include>**/*EarTestCase.java</include>
+                </includes>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+  </build>
+
+</project>

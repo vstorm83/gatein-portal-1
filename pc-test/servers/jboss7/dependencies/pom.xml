@@ -1,0 +1,37 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.gatein.pc</groupId>
+      <artifactId>pc-test-servers-jboss7</artifactId>
+      <version>4.4.x-PLF-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>pc-test-servers-jboss7-dependencies</artifactId>
+   <packaging>pom</packaging>
+   <name>GateIn - Portlet Container (test - dependencies for JBoss7)</name>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gatein.pc</groupId>
+      <artifactId>pc-portlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gatein.pc</groupId>
+      <artifactId>pc-controller</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.ccpp</groupId>
+      <artifactId>ccpp</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

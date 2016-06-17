@@ -1,0 +1,158 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.gatein.pc</groupId>
+      <artifactId>pc-test</artifactId>
+      <version>4.4.x-PLF-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>pc-test-core</artifactId>
+   <packaging>jar</packaging>
+   <name>GateIn - Portlet Container (test - core)</name>
+
+   <dependencies>
+
+      <!-- PC dependencies -->
+      <dependency>
+         <groupId>org.gatein.common</groupId>
+         <artifactId>common-logging</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.gatein.pc</groupId>
+         <artifactId>pc-controller</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.gatein.pc</groupId>
+         <artifactId>pc-portlet</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.gatein.pc</groupId>
+         <artifactId>pc-api</artifactId>
+      </dependency>
+
+      <!-- Various dependencies -->
+      <dependency>
+         <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>commons-logging</groupId>
+         <artifactId>commons-logging</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>commons-httpclient</groupId>
+         <artifactId>commons-httpclient</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>javax.ccpp</groupId>
+        <artifactId>ccpp</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>javax.portlet</groupId>
+         <artifactId>portlet-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+      </dependency>
+
+      <!-- Arquillian/Shrinkwrap stack -->
+      <dependency>
+         <groupId>org.jboss.arquillian.container</groupId>
+         <artifactId>arquillian-container-spi</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.arquillian.junit</groupId>
+         <artifactId>arquillian-junit-container</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.weld</groupId>
+         <artifactId>weld-core-test-arquillian</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.shrinkwrap</groupId>
+         <artifactId>shrinkwrap-api</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.shrinkwrap</groupId>
+         <artifactId>shrinkwrap-impl-base</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.shrinkwrap.resolver</groupId>
+         <artifactId>shrinkwrap-resolver-api-maven</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.shrinkwrap.resolver</groupId>
+         <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-simple</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+
+        <!-- No self processing -->
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <compilerArgument>-proc:none</compilerArgument>
+          </configuration>
+        </plugin>
+
+        <!-- Disable some tests by default -->
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-test</id>
+              <configuration>
+                <excludes>
+                  <exclude>**/Test*.java</exclude>
+                  <exclude>**/*WarTestCase.java</exclude>
+                  <exclude>**/*EarTestCase.java</exclude>
+                </excludes>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+
+      <!-- Deploy the test jar and its sources -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

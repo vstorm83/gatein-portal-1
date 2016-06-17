@@ -1,0 +1,22 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.gatein.pc</groupId>
+      <artifactId>pc-test-servers</artifactId>
+      <version>4.4.x-PLF-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <artifactId>pc-test-servers-jboss7</artifactId>
+   <packaging>pom</packaging>
+   <name>GateIn - Portlet Container (test - JBoss7)</name>
+
+   <modules>
+     <module>dependencies</module>
+     <module>run</module>
+   </modules>
+
+   <dependencies>
+     <!-- THIS MUST BE EMPTY (cf test/servers/jboss7/dependencies) -->
+   </dependencies>
+
+</project>

@@ -37,6 +37,21 @@
   <name>GateIn - Portal</name>
 
   <properties>
+
+      <version.gatein.common>2.2.2.Final</version.gatein.common>
+      <version.gatein.dep>1.4.0.Final</version.gatein.dep>
+      <version.apache.portals.bridges>1.0.4</version.apache.portals.bridges>
+      <version.apache.taglibs>1.1.2</version.apache.taglibs>
+      <version.apache.log4j>1.2.14</version.apache.log4j>
+      <version.discovery>0.4</version.discovery>
+
+     <!-- maven-release-plugin -->
+      <useReleaseProfile>false</useReleaseProfile>
+      <arguments>-Prelease</arguments>
+      <version.release.plugin>2.2.1</version.release.plugin>
+      <pushChanges>false</pushChanges>
+      <autoVersionSubmodules>true</autoVersionSubmodules>
+
     <org.exoplatform.kernel.version>2.6.x-SNAPSHOT</org.exoplatform.kernel.version>
     <org.exoplatform.core.version>2.7.x-SNAPSHOT</org.exoplatform.core.version>
     <org.exoplatform.ws.version>2.5.x-SNAPSHOT</org.exoplatform.ws.version>
@@ -45,9 +60,7 @@
     <org.shindig.version>2.0.2.Final-gatein-4</org.shindig.version>
     <nl.captcha.simplecaptcha.version>1.1.1.Final-gatein-4</nl.captcha.simplecaptcha.version>
     <org.gatein.api.version>1.0.1.Final</org.gatein.api.version>
-    <org.gatein.common.version>2.2.2.Final</org.gatein.common.version>
     <org.gatein.wci.version>2.4.1.Final</org.gatein.wci.version>
-    <org.gatein.pc.version>2.5.1.Final</org.gatein.pc.version>
     <org.gatein.sso.version>1.4.0.Final</org.gatein.sso.version>
     <org.picketlink.idm>1.4.5.Final</org.picketlink.idm>
     <org.gatein.wsrp.version>2.3.0.Final</org.gatein.wsrp.version>
@@ -55,7 +68,6 @@
     <org.gatein.mgmt.version>2.1.0.Final</org.gatein.mgmt.version>
     <version.chromattic>1.3.0</version.chromattic>
     <version.reflext>1.1.0</version.reflext>
-    <org.staxnav.version>0.9.6</org.staxnav.version>
     <jcip.version>1.0</jcip.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-logging.version>1.1.1</commons-logging.version>
@@ -117,6 +129,16 @@
   </scm>
 
   <modules>
+    <module>pc-api</module>
+    <module>pc-jsr168api</module>
+    <module>pc-portlet</module>
+    <module>pc-controller</module>
+    <module>pc-test</module>
+    <module>pc-embed</module>
+    <module>pc-bridge</module>
+    <module>pc-federation</module>
+    <module>pc-management</module>
+    <module>pc-samples</module>
     <module>build-config</module>
     <module>component</module>
     <module>gadgets</module>
@@ -134,16 +156,250 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- Needed becuase of a Maven bug. Components depend on gatein-dep and for some
-           reasons with Maven 2.2.1 it can't find that dependency anymore
-      -->
-      <dependency>
-        <groupId>org.gatein</groupId>
-        <artifactId>gatein-dep</artifactId>
-        <version>1.3.0.Beta01</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+         <!-- Import dependency management configuration -->
+         <dependency>
+            <groupId>org.gatein</groupId>
+            <artifactId>gatein-dep</artifactId>
+            <version>${version.gatein.dep}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+
+         <!-- Internal dependencies -->
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-portlet</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-portlet</artifactId>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-portlet</artifactId>
+            <type>test-jar</type>
+            <classifier>tests</classifier>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-controller</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-api</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-federation</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-bridge</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-test-core</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+           <groupId>org.gatein.pc</groupId>
+           <artifactId>pc-test-core</artifactId>
+           <version>${project.version}</version>
+           <type>test-jar</type>
+         </dependency>
+         <dependency>
+           <groupId>org.gatein.pc</groupId>
+           <artifactId>pc-test-core</artifactId>
+           <version>${project.version}</version>
+           <type>test-jar</type>
+           <classifier>test-sources</classifier>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.pc</groupId>
+            <artifactId>pc-test-servers-jboss7-dependencies</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+
+         <!-- GateIn dependencies -->
+         <dependency>
+            <groupId>org.gatein.common</groupId>
+            <artifactId>common-common</artifactId>
+            <version>${version.gatein.common}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.gatein.common</groupId>
+            <artifactId>common-logging</artifactId>
+            <version>${version.gatein.common}</version>
+         </dependency>
+
+         <!-- API dependencies -->
+        <dependency>
+           <groupId>javax.portlet</groupId>
+           <artifactId>portlet-api</artifactId>
+           <version>2.0</version>
+           <exclusions>
+             <exclusion>
+               <groupId>javax.servlet</groupId>
+               <artifactId>servlet-api</artifactId>
+             </exclusion>
+           </exclusions>
+         </dependency>
+         <dependency>
+           <groupId>javax.servlet.jsp</groupId>
+           <artifactId>jsp-api</artifactId>
+           <scope>provided</scope>
+           <version>2.2</version>
+         </dependency>
+         <dependency>
+           <groupId>sun-jaxb</groupId>
+           <artifactId>jaxb-api</artifactId>
+           <scope>provided</scope>
+           <version>2.1.4</version>
+         </dependency>
+         <dependency>
+           <groupId>javax.ccpp</groupId>
+           <artifactId>ccpp</artifactId>
+           <version>1.0</version>
+         </dependency>
+
+         <!-- Thirdparty (runtime) dependencies -->
+         <dependency>
+            <groupId>org.staxnav</groupId>
+            <artifactId>staxnav.core</artifactId>
+            <version>0.9.6</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.portals.bridges</groupId>
+            <artifactId>portals-bridges-common</artifactId>
+            <version>${version.apache.portals.bridges}</version>
+         </dependency>
+
+         <!-- Dependencies for unit tests -->
+         <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+         </dependency>
+         <dependency>
+           <groupId>log4j</groupId>
+           <artifactId>log4j</artifactId>
+           <version>1.2.16</version>
+         </dependency>
+         <dependency>
+           <groupId>commons-logging</groupId>
+           <artifactId>commons-logging</artifactId>
+           <version>1.1.1</version>
+         </dependency>
+
+        <!-- Arquillian/Shrinkwrap stack -->
+         <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-container-spi</artifactId>
+            <version>1.0.0.CR7</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <version>1.0.0.CR7</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core-test-arquillian</artifactId>
+            <version>1.1.8.Final</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-api</artifactId>
+            <version>1.0.0-cr-1</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.shrinkwrap</groupId>
+            <artifactId>shrinkwrap-impl-base</artifactId>
+            <version>1.0.0-cr-1</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-api-maven</artifactId>
+            <version>2.0.0-alpha-1</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
+            <version>2.0.0-alpha-1</version>
+         </dependency>
+
+        <!-- Drone -->
+        <dependency>
+          <groupId>org.jboss.arquillian.extension</groupId>
+          <artifactId>arquillian-drone-impl</artifactId>
+          <version>1.0.0.CR4</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.arquillian.extension</groupId>
+          <artifactId>arquillian-drone-selenium</artifactId>
+          <version>1.0.0.CR4</version>
+        </dependency>
+        <dependency>
+          <groupId>org.jboss.arquillian.extension</groupId>
+          <artifactId>arquillian-drone-webdriver</artifactId>
+          <version>1.0.0.CR4</version>
+        </dependency>
+        <dependency>
+          <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-java</artifactId>
+          <version>2.20.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-htmlunit-driver</artifactId>
+          <version>2.20.0</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sourceforge.htmlunit</groupId>
+          <artifactId>htmlunit</artifactId>
+          <version>2.9</version>
+        </dependency>
+        <dependency>
+          <groupId>net.sourceforge.nekohtml</groupId>
+          <artifactId>nekohtml</artifactId>
+          <version>1.9.15</version>
+        </dependency>
+
+        <!-- Arquillian Tomcat container -->
+         <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-tomcat-embedded-7</artifactId>
+            <version>1.0.0.CR3</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>7.0.19</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>7.0.19</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-logging-juli</artifactId>
+            <version>7.0.19</version>
+         </dependency>
+         <dependency>
+            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <artifactId>ecj</artifactId>
+            <version>3.7</version>
+         </dependency>
+
 
       <!-- to move to gatein-dep -->
       <dependency>
@@ -309,19 +565,9 @@
 
       <!-- GateIn components -->
       <dependency>
-        <groupId>org.gatein.common</groupId>
-        <artifactId>common-logging</artifactId>
-        <version>${org.gatein.common.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.gatein.api</groupId>
         <artifactId>gatein-api</artifactId>
         <version>${org.gatein.api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gatein.common</groupId>
-        <artifactId>common-common</artifactId>
-        <version>${org.gatein.common.version}</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.wci</groupId>
@@ -337,31 +583,6 @@
         <groupId>org.gatein.wci</groupId>
         <artifactId>wci-jboss7</artifactId>
         <version>${org.gatein.wci.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gatein.pc</groupId>
-        <artifactId>pc-bridge</artifactId>
-        <version>${org.gatein.pc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gatein.pc</groupId>
-        <artifactId>pc-federation</artifactId>
-        <version>${org.gatein.pc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gatein.pc</groupId>
-        <artifactId>pc-portlet</artifactId>
-        <version>${org.gatein.pc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gatein.pc</groupId>
-        <artifactId>pc-api</artifactId>
-        <version>${org.gatein.pc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.gatein.pc</groupId>
-        <artifactId>pc-controller</artifactId>
-        <version>${org.gatein.pc.version}</version>
       </dependency>
       <dependency>
         <groupId>org.gatein.mop</groupId>
@@ -477,13 +698,6 @@
         <artifactId>wsrp-catalog</artifactId>
         <scope>provided</scope>
         <version>${org.gatein.wsrp.version}</version>
-      </dependency>
-
-      <!-- Needed by WSRP, here so that it can be picked up by module generation build.xml -->
-      <dependency>
-        <groupId>commons-httpclient</groupId>
-        <artifactId>commons-httpclient</artifactId>
-        <version>3.1</version>
       </dependency>
 
       <!-- GateIn -->
@@ -1001,13 +1215,6 @@
         <version>${nl.captcha.simplecaptcha.version}</version>
       </dependency>
 
-      <!-- Staxnav -->
-      <dependency>
-        <groupId>org.staxnav</groupId>
-        <artifactId>staxnav.core</artifactId>
-        <version>${org.staxnav.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
@@ -1244,10 +1451,6 @@
               <property>
                 <name>org.apache.commons.logging.simplelog.log.net.hibernate</name>
                 <value>warn</value>
-              </property>
-              <property>
-                <name>java.naming.factory.initial</name>
-                <value>org.exoplatform.services.naming.SimpleContextFactory</value>
               </property>
               <property>
                 <name>com.arjuna.ats.arjuna.objectstore.objectStoreDir</name>

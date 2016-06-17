@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.gatein.portal</groupId>
+      <artifactId>exo.portal.parent</artifactId>
+      <version>4.4.x-PLF-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.gatein.pc</groupId>
+   <artifactId>pc-test</artifactId>
+   <packaging>pom</packaging>
+   <name>GateIn - Portlet Container (test)</name>
+
+   <modules>
+      <module>core</module>
+      <module>servers</module>
+   </modules>
+
+   <dependencies>
+     <!-- THIS MUST BE EMPTY (cf test/servers/jboss7/dependencies) -->
+   </dependencies>
+
+   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-test</id>
+              <configuration>
+                <systemProperties>
+                  <property>
+                    <name>log4j.configuration</name>
+                    <value>pc-log4j.properties</value>
+                  </property>
+                  <property>
+                    <name>log4j.path</name>
+                    <value>${project.build.directory}</value>
+                  </property>
+                  <property>
+                    <name>log4j.level</name>
+                    <value>debug</value>
+                  </property>
+                </systemProperties>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+   </build>
+
+</project>
