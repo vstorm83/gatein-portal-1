@@ -54,6 +54,8 @@ public class UISampleContent extends UIContainer {
     public static final int NODE_RIGHTCLICKPOPUP = 8;
 
     public static final int NODE_MULTIVALUE_INPUTSET = 9;
+    
+    public static final int NODE_MENTIONS = 10;
 
     public static final ApplicationMessage MSG = new ApplicationMessage("UISampleContent.UIPopupMessage.msg",
             new String[] { "World !" }, ApplicationMessage.INFO);
@@ -94,11 +96,19 @@ public class UISampleContent extends UIContainer {
             case NODE_MULTIVALUE_INPUTSET:
                 showMultiValueInputSet();
                 break;
+            case NODE_MENTIONS:
+                showMentions();
+                break;
             default:
                 log.error("not implement yet");
         }
     }
 
+    private void showMentions() {
+        UISampleMentions uiMentions = getChild(UISampleMentions.class);
+        setRenderedChild(uiMentions.getId());
+    }
+    
     private void showMultiValueInputSet() {
         UISampleMultiValueInputSet multiInputSet = getChild(UISampleMultiValueInputSet.class);
         setRenderedChild(multiInputSet.getId());

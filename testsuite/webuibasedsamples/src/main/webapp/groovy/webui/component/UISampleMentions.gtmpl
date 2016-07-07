@@ -1,0 +1,11 @@
+<div id="<%=uicomponent.id%>">
+	<textarea id="sampleMentions"></textarea>
+	<%
+	  def rcontext = _ctx.getRequestContext();
+	  def jsManager = rcontext.getJavascriptManager();
+	  def requireJs = jsManager.getRequireJS();
+	  
+	  requireJs.require("SHARED/uiSampleMentions", "sampleMentions");
+	  requireJs.addScripts("sampleMentions.init();");
+	%>
+</div>
