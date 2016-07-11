@@ -19,6 +19,9 @@ package org.exoplatform.sample.webui.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
+
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIComponent;
@@ -26,8 +29,6 @@ import org.exoplatform.webui.core.UIConfirmation;
 import org.exoplatform.webui.core.UIConfirmation.ActionConfirm;
 import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.lifecycle.UIContainerLifecycle;
-import org.gatein.common.logging.Logger;
-import org.gatein.common.logging.LoggerFactory;
 
 /**
  * Created by The eXo Platform SAS Author : Nguyen Duc Khoi khoi.nguyen@exoplatform.com Apr 28, 2010
@@ -55,7 +56,11 @@ public class UISampleContent extends UIContainer {
 
     public static final int NODE_MULTIVALUE_INPUTSET = 9;
     
-    public static final int NODE_MENTIONS = 10;
+    public static final int NODE_MIX_MENTIONS = 10;
+    
+    public static final int NODE_TAG_MENTIONS = 11;
+    
+    public static final int NODE_CUSTOM_RENDER_MENTIONS = 12;
 
     public static final ApplicationMessage MSG = new ApplicationMessage("UISampleContent.UIPopupMessage.msg",
             new String[] { "World !" }, ApplicationMessage.INFO);
@@ -96,8 +101,14 @@ public class UISampleContent extends UIContainer {
             case NODE_MULTIVALUE_INPUTSET:
                 showMultiValueInputSet();
                 break;
-            case NODE_MENTIONS:
+            case NODE_MIX_MENTIONS:
                 showMentions();
+                break;
+            case NODE_TAG_MENTIONS:
+                showTagMentions();
+                break;
+            case NODE_CUSTOM_RENDER_MENTIONS:
+                showCustomRenderMentions();
                 break;
             default:
                 log.error("not implement yet");
@@ -105,7 +116,17 @@ public class UISampleContent extends UIContainer {
     }
 
     private void showMentions() {
-        UISampleMentions uiMentions = getChild(UISampleMentions.class);
+        UIMixMentions uiMentions = getChild(UIMixMentions.class);
+        setRenderedChild(uiMentions.getId());
+    }
+    
+    private void showTagMentions() {
+        UITagMentions uiMentions = getChild(UITagMentions.class);
+        setRenderedChild(uiMentions.getId());
+    }
+    
+    private void showCustomRenderMentions() {
+        UICustomRenderMentions uiMentions = getChild(UICustomRenderMentions.class);
         setRenderedChild(uiMentions.getId());
     }
     

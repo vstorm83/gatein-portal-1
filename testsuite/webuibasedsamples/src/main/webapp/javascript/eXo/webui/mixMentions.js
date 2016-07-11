@@ -5,7 +5,7 @@
 	
 	var sample = {
 		init : function() {
-			$('#sampleMentions').commonMentions({
+			$('#mixMentions').commonMentions({				
 				onDataRequest: function(action, query, callback) {
 					query = '[' + query.split('').join(',') + ']';
 					query = new RegExp(query);

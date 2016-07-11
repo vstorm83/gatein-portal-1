@@ -1,0 +1,11 @@
+<div id="<%=uicomponent.id%>">
+	<textarea id="tagMentions"></textarea>
+	<%
+	  def rcontext = _ctx.getRequestContext();
+	  def jsManager = rcontext.getJavascriptManager();
+	  def requireJs = jsManager.getRequireJS();
+	  
+	  requireJs.require("SHARED/tagMentions", "tagMentions");
+	  requireJs.addScripts("tagMentions.init();");
+	%>
+</div>

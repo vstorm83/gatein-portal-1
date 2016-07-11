@@ -4,10 +4,10 @@ import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.core.UIContainer;
 import org.exoplatform.webui.core.lifecycle.UIFormLifecycle;
 
-@ComponentConfig(lifecycle = UIFormLifecycle.class, template = "app:/groovy/webui/component/UISampleMentions.gtmpl")
-public class UISampleMentions extends UIContainer {
+@ComponentConfig(lifecycle = UIFormLifecycle.class, template = "app:/groovy/webui/component/UIMixMentions.gtmpl")
+public class UIMixMentions extends UIContainer {
 
-    public UISampleMentions() throws Exception {
+    public UIMixMentions() throws Exception {
        
     }
 
