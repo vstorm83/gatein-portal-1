@@ -1,47 +1,39 @@
 (function($) {
-	var data = [{'id': '1', 'name': 'abc', 'icon': 'plus'},
-	            {'id': '2', 'name': 'def', 'icon': 'plus'},
-				{'id': '3', 'name': 'ghi', 'icon': 'plus'}];
-	
-	var sample = {
-		init : function() {
-			$('#tagMentions').commonMentions({
-				triggerChar: '',	
-				allowAdd: true,
-				onAutoCompleteItemClick: function(id) {
-					var results = [];
-					$.each(data, function(idx, elm) {
-						if (elm.id == id) {
-							results.push(elm);
-						} 
-					});
-					if (results.length) {
-						return results[0];
-					} else {
-						return {'id': id, 'name': id, 'icon': 'plus'};
-					}
-				},
-				addMessageMenu : function(parent, msg, allowAdd) {
-					if (allowAdd) {
-						$('<li class="data" data-uid="'+ msg +'"></li>')
-						.html('adding <em>'+msg+'...</em>')
-						.appendTo(parent);						
-					}
-				},
-				onDataRequest: function(action, query, callback) {
-					query = '[' + query.split('').join(',') + ']';
-					query = new RegExp(query);
-					
-					var results = [];
-					$.each(data, function(idx, elm) {
-						if (query.test(elm.name)) {
-							results.push(elm);
-						} 
-					});
-					callback.call(this, results);
-				}
-			});
-		}
-	};
-	return sample;
+  var data = [
+              {value: 'alex', uid: 'user:1'},
+              {value: 'andrew', uid: 'user:2'},
+              {value: 'angry birds', uid: 'game:5'},
+              {value: 'assault', uid: 'game:3'}
+          ];
+  
+  var sample = {
+    init : function() {
+      $('#tagMentions').mention({
+        type : 0,
+        source: function(query, callback) {
+          query = '[' + query.split('').join(',') + ']';
+          query = new RegExp(query);
+          
+          var results = [];
+          $.each(data, function(idx, elm) {
+            if (query.test(elm.value)) {
+              results.push(elm);
+            }
+          });
+          callback.call(this, results);
+        },        
+        renderMenuItem: function(item, escape) {
+          console.log('rendering custom menu item');
+          return $( "<li>" ).append( $( "<div>" ).text( item.value ) );
+        }
+//        renderItem: function(mention) {
+//          console.log('rendering custom item');
+//          var tpl = '<span data-mention="' + mention.uid + '">' + mention.label + 
+//          '<i class="uiIconClose uiIconLightGray" onclick="this.parentNode.parentNode.removeChild(this.parentNode)"></i></span>';
+//          return tpl;
+//        }
+      });
+    }
+  };
+  return sample;
 })($);

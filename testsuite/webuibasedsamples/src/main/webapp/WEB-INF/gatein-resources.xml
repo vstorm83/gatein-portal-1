@@ -54,19 +54,7 @@
       <module>jquery</module>
     </depends>
     <depends>
-      <module>commonMentions</module>
-    </depends>
-  </module>
-  <module>
-    <name>cusMentions</name>
-    <script>
-      <path>/javascript/eXo/webui/cusMentions.js</path>
-    </script>
-    <depends>
-      <module>jquery</module>
-    </depends>
-    <depends>
-      <module>commonMentions</module>
+      <module>exoMention</module>
     </depends>
   </module>
   <module>
@@ -78,7 +66,7 @@
       <module>jquery</module>
     </depends>
     <depends>
-      <module>commonMentions</module>
+      <module>exoMention</module>
     </depends>
   </module>
 </gatein-resources>

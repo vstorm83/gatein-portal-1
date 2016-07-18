@@ -58,9 +58,7 @@ public class UISampleContent extends UIContainer {
     
     public static final int NODE_MIX_MENTIONS = 10;
     
-    public static final int NODE_TAG_MENTIONS = 11;
-    
-    public static final int NODE_CUSTOM_RENDER_MENTIONS = 12;
+    public static final int NODE_TAG_MENTIONS = 11;    
 
     public static final ApplicationMessage MSG = new ApplicationMessage("UISampleContent.UIPopupMessage.msg",
             new String[] { "World !" }, ApplicationMessage.INFO);
@@ -107,9 +105,6 @@ public class UISampleContent extends UIContainer {
             case NODE_TAG_MENTIONS:
                 showTagMentions();
                 break;
-            case NODE_CUSTOM_RENDER_MENTIONS:
-                showCustomRenderMentions();
-                break;
             default:
                 log.error("not implement yet");
         }
@@ -122,11 +117,6 @@ public class UISampleContent extends UIContainer {
     
     private void showTagMentions() {
         UITagMentions uiMentions = getChild(UITagMentions.class);
-        setRenderedChild(uiMentions.getId());
-    }
-    
-    private void showCustomRenderMentions() {
-        UICustomRenderMentions uiMentions = getChild(UICustomRenderMentions.class);
         setRenderedChild(uiMentions.getId());
     }
     
