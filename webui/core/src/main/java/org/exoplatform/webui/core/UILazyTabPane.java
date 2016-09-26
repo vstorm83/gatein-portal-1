@@ -19,6 +19,9 @@
 
 package org.exoplatform.webui.core;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
@@ -30,6 +33,8 @@ import org.exoplatform.webui.event.EventListener;
  */
 @ComponentConfig(template = "system:/groovy/webui/core/UILazyTabPane.gtmpl", events = { @EventConfig(listeners = UILazyTabPane.SelectTabActionListener.class) })
 public class UILazyTabPane extends UIContainer {
+    private List<UILazyTab> tabs = new CopyOnWriteArrayList<UILazyTab>();;
+
     private static String selectedTabId = "";
 
     public String getSelectedTabId() {
@@ -44,6 +49,28 @@ public class UILazyTabPane extends UIContainer {
         selectedTabId = ((UIComponent) getChild(index - 1)).getId();
     }
 
+    public <T extends UIComponent> T addTab(Class<T> type, String configId, String id) throws Exception {
+        T comp = addChild(type, configId, id);
+        UILazyTab tab = createUIComponent(UILazyTab.class, null, comp.getId() + "Tab");
+        tab.setUIComponent(comp);
+        return comp;
+    }
+
+    public UILazyTab getTabByComponentId(String id) {
+        String tabId = id + "Tab";
+        for (UILazyTab tab : tabs) {
+            if (tabId.equals(tab.getId())) {
+                return tab;
+            }
+        }
+        return null;
+    }
+
+    public void renderTabByComponentId(String id) throws Exception {
+        UILazyTab tab = getTabByComponentId(id);
+        tab.processRender((WebuiRequestContext) WebuiRequestContext.getCurrentInstance());
+    }
+
     public static class SelectTabActionListener extends EventListener<UILazyTabPane> {
         public void execute(Event<UILazyTabPane> event) throws Exception {
             WebuiRequestContext context = event.getRequestContext();
@@ -51,10 +78,10 @@ public class UILazyTabPane extends UIContainer {
 
             UILazyTabPane uicomp = event.getSource();
 
-            UIComponent uiChild = uicomp.getChildById(renderTab);
             if (renderTab == null)
                 return;
             selectedTabId = renderTab;
+            UIComponent uiChild = uicomp.getTabByComponentId(renderTab);
             event.getRequestContext().addUIComponentToUpdateByAjax(uiChild);
         }
     }
