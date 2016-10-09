@@ -171,7 +171,6 @@ public class NavigationServiceWrapper implements NavigationService, Startable {
                 session.logout();
             }
         }
-        this.service.start();
     }
 
     public void stop() {
