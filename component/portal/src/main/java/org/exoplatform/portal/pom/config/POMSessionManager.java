@@ -228,4 +228,7 @@ public class POMSessionManager implements Startable {
         return executor.execute(session, task);
     }
 
+    public ChromatticManager getChromatticManager() {
+      return manager;
+    }
 }
