@@ -30,7 +30,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.gatein.common.logging.Logger;
+import org.gatein.common.logging.LoggerFactory;
+import org.gatein.mop.api.Attributes;
+import org.gatein.mop.api.workspace.Navigation;
+import org.gatein.mop.api.workspace.ObjectType;
+import org.gatein.mop.api.workspace.Site;
+import org.gatein.mop.api.workspace.Workspace;
+import org.gatein.mop.api.workspace.link.PageLink;
+import org.picocontainer.Startable;
 
+import org.exoplatform.container.component.RequestLifeCycle;
 import org.exoplatform.portal.mop.Described;
 import org.exoplatform.portal.mop.SiteKey;
 import org.exoplatform.portal.mop.SiteType;
@@ -40,20 +50,12 @@ import org.exoplatform.portal.mop.page.PageKey;
 import org.exoplatform.portal.pom.config.POMSession;
 import org.exoplatform.portal.pom.config.POMSessionManager;
 import org.exoplatform.portal.pom.data.MappedAttributes;
-import org.gatein.common.logging.Logger;
-import org.gatein.common.logging.LoggerFactory;
-import org.gatein.mop.api.Attributes;
-import org.gatein.mop.api.workspace.Navigation;
-import org.gatein.mop.api.workspace.ObjectType;
-import org.gatein.mop.api.workspace.Site;
-import org.gatein.mop.api.workspace.Workspace;
-import org.gatein.mop.api.workspace.link.PageLink;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @version $Revision$
  */
-public class NavigationServiceImpl implements NavigationService {
+public class NavigationServiceImpl implements NavigationService, Startable {
 
     /** . */
     final POMSessionManager manager;
@@ -659,5 +661,44 @@ public class NavigationServiceImpl implements NavigationService {
             toUpdate.add(parent.handle);
             toUpdate.add(target.handle);
         }
+    }
+
+    @Override
+    public void start() {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          RequestLifeCycle.begin(manager.getChromatticManager());
+          try {
+            POMSession session = manager.getSession();
+
+            log.info("loading portal navigations");
+
+            ObjectType<Site> objectType = objectType(SiteType.PORTAL);
+            Collection<Site> sites = session.getWorkspace().getSites(objectType);
+            for (Site site : sites) {
+              SiteKey key = SiteKey.portal(site.getName());
+              dataCache.getNavigation(session, key);
+            }
+
+            log.info("finished loading portal navigations");
+
+            log.info("loading spaces & groups navigations");
+            objectType = objectType(SiteType.GROUP);
+            sites = session.getWorkspace().getSites(objectType);
+            for (Site site : sites) {
+              SiteKey key = SiteKey.group(site.getName());
+              dataCache.getNavigation(session, key);
+            }
+            log.info("finished loading group navigations");
+          } finally {
+            RequestLifeCycle.end();
+          }
+        }
+      }, "GatenNavigationLoader").start();
+    }
+
+    @Override
+    public void stop() {
     }
 }
