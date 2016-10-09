@@ -387,12 +387,6 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             }
         }
 
-        if (authenticated && orgService.getConfiguration().isUpdateLastLoginTimeAfterAuthentication()) {
-            UserImpl userImpl = (UserImpl) user;
-            userImpl.setLastLoginTime(Calendar.getInstance().getTime());
-            saveUser(userImpl, false);
-        }
-
         if (log.isTraceEnabled()) {
             Tools.logMethodOut(log, LogLevel.TRACE, "authenticate", authenticated);
         }
