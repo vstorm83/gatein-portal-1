@@ -18,6 +18,7 @@ package org.exoplatform.services.organization.idm;
 
 import java.util.Calendar;
 
+import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.listener.Asynchronous;
 import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
@@ -30,14 +31,19 @@ import org.exoplatform.services.security.ConversationState;
 public class UpdateLoginTimeListener extends Listener<ConversationRegistry, ConversationState> {
   public static final String  USER_PROFILE = "UserProfile";
 
+  private PortalContainer     container;
+
   private OrganizationService organizationService;
 
-  public UpdateLoginTimeListener(OrganizationService organizationService) throws Exception {
-    this.organizationService = organizationService;
+  public UpdateLoginTimeListener(PortalContainer container) {
+    this.container = container;
   }
 
   @Override
   public void onEvent(Event<ConversationRegistry, ConversationState> event) throws Exception {
+    if (organizationService == null) {
+      organizationService = this.container.getComponentInstanceOfType(OrganizationService.class);
+    }
     ConversationState state = event.getData();
     String userId = state.getIdentity().getUserId();
     User user = (User) state.getAttribute(USER_PROFILE);
