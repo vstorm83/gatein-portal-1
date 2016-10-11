@@ -24,6 +24,7 @@ import org.exoplatform.services.listener.Event;
 import org.exoplatform.services.listener.Listener;
 import org.exoplatform.services.organization.OrganizationService;
 import org.exoplatform.services.organization.User;
+import org.exoplatform.services.organization.UserHandler;
 import org.exoplatform.services.security.ConversationRegistry;
 import org.exoplatform.services.security.ConversationState;
 
@@ -44,29 +45,21 @@ public class UpdateLoginTimeListener extends Listener<ConversationRegistry, Conv
     if (organizationService == null) {
       organizationService = this.container.getComponentInstanceOfType(OrganizationService.class);
     }
-    ConversationState state = event.getData();
-    String userId = state.getIdentity().getUserId();
-    User user = (User) state.getAttribute(USER_PROFILE);
-    if (user == null) {
-      user = organizationService.getUserHandler().findUserByName(userId);
-      state.setAttribute(USER_PROFILE, user);
-    }
 
-    if (organizationService instanceof PicketLinkIDMOrganizationServiceImpl) {
-      PicketLinkIDMOrganizationServiceImpl picketLinkIDMOrganizationServiceImpl = (PicketLinkIDMOrganizationServiceImpl) organizationService;
-      boolean shouldUpdateLastLoginTime = picketLinkIDMOrganizationServiceImpl.getConfiguration()
-                                                                              .isUpdateLastLoginTimeAfterAuthentication();
-      if (shouldUpdateLastLoginTime) {
-        updateLastLoginTime(user);
+    UserHandler userHandler = organizationService.getUserHandler();
+    if (userHandler.isUpdateLastLoginTime()) {
+
+      ConversationState state = event.getData();
+      String userId = state.getIdentity().getUserId();
+      User user = (User) state.getAttribute(USER_PROFILE);
+
+      if (user == null) {
+        user = userHandler.findUserByName(userId);
+        state.setAttribute(USER_PROFILE, user);
       }
-    } else {
-      updateLastLoginTime(user);
-    }
-  }
 
-  @SuppressWarnings("deprecation")
-  private void updateLastLoginTime(User user) throws Exception {
-    user.setLastLoginTime(Calendar.getInstance().getTime());
-    organizationService.getUserHandler().saveUser(user, false);
+      user.setLastLoginTime(Calendar.getInstance().getTime());
+      organizationService.getUserHandler().saveUser(user, false);
+    }
   }
 }
