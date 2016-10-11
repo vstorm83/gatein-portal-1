@@ -59,7 +59,7 @@ public class UpdateLoginTimeListener extends Listener<ConversationRegistry, Conv
       }
 
       user.setLastLoginTime(Calendar.getInstance().getTime());
-      organizationService.getUserHandler().saveUser(user, false);
+      userHandler.saveUser(user, false);
     }
   }
 }
