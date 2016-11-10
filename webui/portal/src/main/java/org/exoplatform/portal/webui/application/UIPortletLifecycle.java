@@ -1,16 +1,16 @@
 /**
  * Copyright (C) 2009 eXo Platform SAS.
- *
+ * <p>
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
- *
+ * <p>
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -154,7 +154,7 @@ public class UIPortletLifecycle<S, C extends Serializable, I> extends Lifecycle<
         } catch (Exception e) {
             String message = e.getLocalizedMessage();
             log.error("Error processing the action: " + message, e);
-            Object[] args = { message };
+            Object[] args = {message};
             context.addUIComponentToUpdateByAjax(uicomponent);
             throw new MessageException(new ApplicationMessage("UIPortletLifecycle.msg.process-error", args,
                     ApplicationMessage.ERROR));
@@ -194,10 +194,11 @@ public class UIPortletLifecycle<S, C extends Serializable, I> extends Lifecycle<
                 // Check mode of portal, portlet and permission for viewable
                 if ((Util.getUIPortalApplication().getEditMode() != EditMode.BLOCK || uicomponent.getCurrentPortletMode()
                         .equals(PortletMode.EDIT)) && uicomponent.hasAccessPermission()) {
-                        PortletInvocationResponse response = uicomponent.invoke(renderInvocation);
-                        if (response != null)
+                    PortletInvocationResponse response = uicomponent.invoke(renderInvocation);
+                    if (response != null) {
                         markup = uicomponent.generateRenderMarkup(response, prcontext);
-                           else log.error("Response is null");
+                    } else
+                        log.error("response is null when processing the render of the portlet " + uicomponent.getApplicationId());
                 } else {
                     uicomponent.setConfiguredTitle(null);
                 }
