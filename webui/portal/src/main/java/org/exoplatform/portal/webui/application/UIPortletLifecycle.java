@@ -194,12 +194,10 @@ public class UIPortletLifecycle<S, C extends Serializable, I> extends Lifecycle<
                 // Check mode of portal, portlet and permission for viewable
                 if ((Util.getUIPortalApplication().getEditMode() != EditMode.BLOCK || uicomponent.getCurrentPortletMode()
                         .equals(PortletMode.EDIT)) && uicomponent.hasAccessPermission()) {
-                    if (uicomponent != null)
-                    {
                         PortletInvocationResponse response = uicomponent.invoke(renderInvocation);
+                        if (response != null)
                         markup = uicomponent.generateRenderMarkup(response, prcontext);
-                    }
-
+                           else log.error("Response is null");
                 } else {
                     uicomponent.setConfiguredTitle(null);
                 }
