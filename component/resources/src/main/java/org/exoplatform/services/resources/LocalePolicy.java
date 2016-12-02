@@ -21,8 +21,6 @@
  */
 package org.exoplatform.services.resources;
 
-import java.util.Enumeration;
-import java.util.List;
 import java.util.Locale;
 
 
@@ -40,15 +38,4 @@ public interface LocalePolicy {
      * @return Locale to be used for current user's request
      */
     Locale determineLocale(LocaleContextInfo localeContext);
-    
-    /**
-     *  Automate setters invocation for {@link LocaleContextInfo} object
-     * @param username
-     * @param portalLocale
-     * @param sessionLocale
-     * @param requestLocales
-     * @param cookieLocales
-     * @return LocaleContextInfo
-     */
-    LocaleContextInfo buildLocaleContextInfo(String username, Locale portalLocale, Locale sessionLocale, Enumeration<Locale> requestLocales, List<Locale> cookieLocales);
 }

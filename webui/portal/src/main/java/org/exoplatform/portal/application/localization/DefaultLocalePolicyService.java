@@ -21,14 +21,12 @@
  */
 package org.exoplatform.portal.application.localization;
 
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.services.resources.LocaleConfig;
-import org.exoplatform.services.resources.LocaleConfigService;
+import java.util.List;
+import java.util.Locale;
+
 import org.exoplatform.services.resources.LocaleContextInfo;
 import org.exoplatform.services.resources.LocalePolicy;
 import org.picocontainer.Startable;
-
-import java.util.*;
 
 /**
  * This service represents a default policy for determining LocaleConfig to be used for user's session. This service is
@@ -49,12 +47,6 @@ import java.util.*;
  * @author <a href="mailto:mstrukel@redhat.com">Marko Strukelj</a>
  */
 public class DefaultLocalePolicyService implements LocalePolicy, Startable {
-    
-    private static final String PREV_LOCALE_SESSION_ATTR = "org.gatein.LAST_LOCALE";
-    
-    private LocaleConfigService localeConfigService = ExoContainerContext.getCurrentContainer()
-            .getComponentInstanceOfType(LocaleConfigService.class);
-    
     /**
      * @see LocalePolicy#determineLocale(LocaleContextInfo)
      */
@@ -74,23 +66,6 @@ public class DefaultLocalePolicyService implements LocalePolicy, Startable {
             locale = context.getPortalLocale();
 
         return locale;
-    }
-    
-    public LocaleContextInfo buildLocaleContextInfo(String username, Locale portalLocale, Locale sessionLocale, Enumeration<Locale> requestLocales, List<Locale> cookieLocales) {
-        //
-        Set<Locale> supportedLocales = new HashSet();
-        for (LocaleConfig lc : localeConfigService.getLocalConfigs()) {
-            supportedLocales.add(lc.getLocale());
-        }
-        // build localCtx
-        LocaleContextInfo localeCtx = new LocaleContextInfo();
-        localeCtx.setSupportedLocales(supportedLocales);
-        localeCtx.setBrowserLocales(Collections.list(requestLocales));
-        localeCtx.setCookieLocales(cookieLocales);
-        localeCtx.setSessionLocale(sessionLocale);
-        localeCtx.setRemoteUser(username);
-        localeCtx.setPortalLocale(portalLocale);
-        return localeCtx;
     }
 
     /**

@@ -21,10 +21,9 @@
  */
 package org.exoplatform.services.resources;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import org.exoplatform.container.ExoContainerContext;
 
+import java.util.*;
 
 /**
  * Data structure that holds the inputs for {@link LocalePolicy} pluggable policies mechanism.
@@ -40,7 +39,10 @@ public class LocaleContextInfo {
     private Locale portalLocale;
     private Locale sessionLocale;
     private Locale requestLocale;
-
+    
+    private LocaleConfigService localeConfigService = ExoContainerContext.getCurrentContainer()
+            .getComponentInstanceOfType(LocaleConfigService.class);
+    
     /**
      * Setter for supportedLocales
      *
@@ -246,5 +248,27 @@ public class LocaleContextInfo {
             return locale.getLanguage();
 
         return locale.getLanguage() + "_" + locale.getCountry();
+    }
+    
+    /**
+     *  Helper method for setters invocation on {@link LocaleContextInfo} object
+     * @param username
+     * @param portalLocale
+     * @param sessionLocale
+     * @param requestLocales
+     * @param cookieLocales
+     */
+    public void build(String username, Locale portalLocale, Locale sessionLocale, Enumeration<Locale> requestLocales, List<Locale> cookieLocales) {
+        //
+        Set<Locale> supportedLocales = new HashSet();
+        for (LocaleConfig lc : localeConfigService.getLocalConfigs()) {
+            supportedLocales.add(lc.getLocale());
+        }
+        this.setSupportedLocales(supportedLocales);
+        this.setBrowserLocales(Collections.list(requestLocales));
+        this.setCookieLocales(cookieLocales);
+        this.setSessionLocale(sessionLocale);
+        this.setRemoteUser(username);
+        this.setPortalLocale(portalLocale);
     }
 }
