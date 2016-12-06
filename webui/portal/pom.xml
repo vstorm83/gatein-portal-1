@@ -114,11 +114,6 @@
       <artifactId>exo.portal.component.test.core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.exoplatform.commons</groupId>
-      <artifactId>commons-component-common</artifactId>
-      <version>4.5.x-SNAPSHOT</version>
-    </dependency>
 
   </dependencies>
 </project>
