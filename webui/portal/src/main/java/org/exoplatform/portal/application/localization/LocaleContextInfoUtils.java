@@ -1,6 +1,5 @@
 package org.exoplatform.portal.application.localization;
 
-import org.exoplatform.container.ExoContainerContext;
 import org.exoplatform.portal.config.UserACL;
 import org.exoplatform.portal.config.UserPortalConfig;
 import org.exoplatform.portal.config.UserPortalConfigService;
@@ -9,6 +8,7 @@ import org.exoplatform.services.resources.LocaleConfig;
 import org.exoplatform.services.resources.LocaleConfigService;
 import org.exoplatform.services.resources.LocaleContextInfo;
 import org.gatein.common.i18n.LocaleFactory;
+import org.exoplatform.commons.utils.CommonsUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -20,10 +20,6 @@ public class LocaleContextInfoUtils {
   
   private static final String PREV_LOCALE_SESSION_ATTR = "org.gatein.LAST_LOCALE";
   
-  private static UserPortalConfigService userPortalConfigService = null;
-  
-  private static LocaleConfigService localeConfigService = null;
-  
   /**
    *  Helper method for setters invocation on {@link LocaleContextInfo} object
    * @param request
@@ -34,10 +30,10 @@ public class LocaleContextInfoUtils {
     // get user portal locale
     String username = request.getRemoteUser();
     if (username == null) {
-      UserACL userACL = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserACL.class);
+      UserACL userACL = CommonsUtils.getService(UserACL.class);
       username = userACL.getSuperUser();
     }
-    getUserPortalConfigService();
+    UserPortalConfigService userPortalConfigService = CommonsUtils.getService(UserPortalConfigService.class);
     UserPortalConfig userPortalConfig = userPortalConfigService.getUserPortalConfig(userPortalConfigService.getDefaultPortal(), username);
     Locale portalLocale = null;
     if (userPortalConfig != null) {
@@ -46,7 +42,7 @@ public class LocaleContextInfoUtils {
         portalLocale = LocaleFactory.DEFAULT_FACTORY.createLocale(pConfig.getLocale());
     }
     //
-    getLocaleConfigService();
+    LocaleConfigService localeConfigService = CommonsUtils.getService(LocaleConfigService.class);
     Set<Locale> supportedLocales = new HashSet();
     for (LocaleConfig lc : localeConfigService.getLocalConfigs()) {
       supportedLocales.add(lc.getLocale());
@@ -64,17 +60,4 @@ public class LocaleContextInfoUtils {
     localeCtx.setPortalLocale(portalLocale);
     return localeCtx;
   }
-  
-  private static void getLocaleConfigService() {
-    if (localeConfigService ==null) {
-      localeConfigService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(LocaleConfigService.class);
-    }
-  }
-  
-  private static void getUserPortalConfigService() {
-    if (userPortalConfigService == null) {
-      userPortalConfigService = ExoContainerContext.getCurrentContainer().getComponentInstanceOfType(UserPortalConfigService.class);
-    }
-  }
-  
 }
