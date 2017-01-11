@@ -20,7 +20,7 @@ public class ExoDataCache extends DataCache {
     private Loader<ScopedKey<PageKey>, PageData, POMSession> pageLoader = new Loader<ScopedKey<PageKey>, PageData, POMSession>() {
         public PageData retrieve(POMSession session, ScopedKey<PageKey> scopedKey) throws Exception {
             PageData data = loadPage(session, scopedKey.getKey());
-            return data == PageData.EMPTY ? null : data;
+            return data;
         }
     };
 

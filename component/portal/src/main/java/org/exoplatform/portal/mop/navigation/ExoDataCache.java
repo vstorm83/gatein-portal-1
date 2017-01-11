@@ -49,7 +49,7 @@ public class ExoDataCache extends DataCache {
             Object key = scopedKey.getKey();
             if (key instanceof SiteKey) {
                 NavigationData data = loadNavigation(session, (SiteKey) key);
-                return data == NavigationData.EMPTY ? null : data;
+                return data;
             } else {
                 return loadNode(session, (String) key);
             }
