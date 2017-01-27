@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -108,14 +107,6 @@ public class PortalRequestContext extends WebuiRequestContext {
     private static final String LAST_PORTAL_NAME = "prc.lastPortalName";
 
     private static final String DO_LOGIN_PATTERN = "login";
-  
-    private static final String START_AJAX_REDIRECT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><partial-response><redirect url=\"";
-  
-    private static  String END_AJAX_REDIRECT = "\"/></partial-response>";
-  
-    private static final String AJAX_JSF_HTTP_HEADER = "Faces-Request";
-  
-    private static final String AJAX_JSF_HTTP_HEADER_VALUE = "partial/ajax";
 
     /** The path decoded from the request. */
     private final String nodePath_;
@@ -578,60 +569,10 @@ public class PortalRequestContext extends WebuiRequestContext {
 
     public final void sendRedirect(String url) throws IOException {
         setResponseComplete(true);
-        if (isJSFAjaxRequest()) {
-            log.debug("JSF Ajax request detected : send HTTP 200 and ajax redirect partial response.");
-            writeJSFAjaxRedirect(url);
-        } else {
-            log.debug("JSF Ajax request not detected : send standard HTTP 302.");
-            response_.sendRedirect(url);
-        }
+        response_.sendRedirect(url);
     }
-  
-  /** Write Ajax JSF redirect on the response*
-   * @throws IOException
-   * Response Writer Error
-   */
-    public void writeJSFAjaxRedirect(final String pUrl) throws IOException {
-        /*
-         * In the case of JSF Ajax redirect, query string of initialUrl doesn't make sense :
-         * - JSF components instances doesn't exist anymore
-         * - views are expired
-         * We cannot do better than remove the query string of the initialURI.
-         */
-        final String[] splitedUrl = pUrl.split("\\?initialURI=");
-        final String requestURI = splitedUrl[0];
-        String finalUrl = requestURI;
-        if (splitedUrl.length > 1) {
-            finalUrl += "?initialURI=" + URLDecoder.decode(splitedUrl[1], "UTF-8").split("\\?")[0];
-        }
-        try {
-            response_.reset();
-            response_.addHeader("Content-Type", "text/xml;charset=UTF-8");
-            response_.getWriter().append(START_AJAX_REDIRECT);
-            response_.getWriter().append(finalUrl);
-            response_.getWriter().append(END_AJAX_REDIRECT);
-            response_.getWriter().flush();
-        } catch (final Exception e) {
-            /*
-             * rethrow exception to fix exception type to IOException
-             * FIXME : Warning - the getWriter() method signature declare throwing Exception
-             * but could only throw IllegalArgumentException or IOException.
-             * Signature should be fixed.
-             */
-            throw new IOException("Sending Ajax redirect in error.", e);
-      }
-    }
-  
-  /**
-   * Return true when current request is JSF and Ajax
-   * - check JSF header
-   *
-   * @return true if request is an Ajax request
-   */
-    private boolean isJSFAjaxRequest() {
-      final String headerValue = request_.getHeader(AJAX_JSF_HTTP_HEADER);
-      return headerValue != null && AJAX_JSF_HTTP_HEADER_VALUE.contentEquals(headerValue);
-    }
+    
+ 
   
     public void setHeaders(Map<String, String> headers) {
         final Set<String> keys = headers.keySet();
