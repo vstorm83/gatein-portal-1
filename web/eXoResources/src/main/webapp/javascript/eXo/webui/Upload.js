@@ -218,6 +218,7 @@
 
 			  if (percent == 100) {
 				  uiUploadInput.showUploaded(id);
+				  document.getElementById("save_button").disabled = false;
 			  }
 		  }
 
@@ -270,6 +271,7 @@
 		 *          id
 		 */
 	  upload : function(id) {
+		  document.getElementById("save_button").disabled = true;
 		  var jCont = $('#uploadContainer' + id);
 		  var uiInput = jCont.closest(".uiUploadInput");
 		  uiUploadInput.createEntryUpload(uiInput.attr("id"));
@@ -522,6 +524,7 @@
 
 			  if (percent == 100) {
 				  uiUpload.showUploaded(id);
+				  document.getElementById("save_button").disabled = false;
 			  }
 		  }
 
