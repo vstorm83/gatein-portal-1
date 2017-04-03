@@ -963,11 +963,6 @@
       </dependency>
       <dependency>
         <groupId>org.picketlink.idm</groupId>
-        <artifactId>picketlink-idm-cache</artifactId>
-        <version>${org.picketlink.idm}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.picketlink.idm</groupId>
         <artifactId>picketlink-idm-spi</artifactId>
         <version>${org.picketlink.idm}</version>
       </dependency>
