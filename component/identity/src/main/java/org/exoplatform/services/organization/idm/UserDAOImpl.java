@@ -197,7 +197,7 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         orgService.flush();
         IdentitySession session = service_.getIdentitySession();
         User foundUser = getPopulatedUser(userName, session, UserStatus.ANY);
-        
+
         if (!disableUserActived()) {
             log.debug("disableUserActived option is set to FALSE, setEnabled method will be ignored");
             return foundUser;
@@ -285,6 +285,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         return exoUser;
     }
 
+    @Override
+    public boolean isUpdateLastLoginTime() {
+      return orgService.getConfiguration().isUpdateLastLoginTimeAfterAuthentication();
+    }
+
     //
     public User findUserByName(String userName) throws Exception {
         return findUserByName(userName, UserStatus.ENABLED);
@@ -315,9 +320,9 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         UserQueryBuilder qb = service_.getIdentitySession().createUserQueryBuilder();
         boolean enabledOnly = filterDisabledUsersInQueries();
         if (enabledOnly) {
-            qb = addDisabledUserFilter(qb);
+            qb = addEnabledUserFilter(qb);
         }
-        return new LazyPageList<User>(new IDMUserListAccess(qb, pageSize, true, enabledOnly ? UserStatus.ENABLED : UserStatus.DISABLED), pageSize);
+        return new LazyPageList<User>(new IDMUserListAccess(qb, pageSize, true, countPaginatedUsers(), enabledOnly ? UserStatus.ENABLED : UserStatus.DISABLED), pageSize);
     }
 
     public ListAccess<User> findAllUsers() throws Exception {
@@ -335,19 +340,19 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             switch (userStatus) {
                 case DISABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
+                        qb = addDisabledUserFilter(qb);
                     }
                     break;
                 case ANY:
                     break;
                 case ENABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
+                        qb = addEnabledUserFilter(qb);
                     }
                     break;
             }
         }
-        return new IDMUserListAccess(qb, 20, !countPaginatedUsers(), userStatus);
+        return new IDMUserListAccess(qb, 20, !countPaginatedUsers(), countPaginatedUsers(), userStatus);
     }
 
     //
@@ -385,12 +390,6 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
                 handleException("Cannot authenticate user: " + username + "; ", e);
 
             }
-        }
-
-        if (authenticated && orgService.getConfiguration().isUpdateLastLoginTimeAfterAuthentication()) {
-            UserImpl userImpl = (UserImpl) user;
-            userImpl.setLastLoginTime(Calendar.getInstance().getTime());
-            saveUser(userImpl, false);
         }
 
         if (log.isTraceEnabled()) {
@@ -494,23 +493,23 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             switch (userStatus) {
                 case DISABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
+                        qb = addDisabledUserFilter(qb);
                     }
                     break;
                 case ANY:
                     break;
                 case ENABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
+                        qb = addEnabledUserFilter(qb);
                     }
                     break;
             }            
         }
 
         if (q.getUserName() == null && q.getEmail() == null && q.getFirstName() == null && q.getLastName() == null) {
-            list = new IDMUserListAccess(qb, 20, !countPaginatedUsers(), userStatus);
+            list = new IDMUserListAccess(qb, 20, !countPaginatedUsers(), countPaginatedUsers(), userStatus);
         } else {
-            list = new IDMUserListAccess(qb, 20, false, userStatus);
+            list = new IDMUserListAccess(qb, 20, false, countPaginatedUsers(), userStatus);
         }
 
         if (cache != null) {
@@ -612,20 +611,20 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
             switch (userStatus) {
                 case DISABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
+                        qb = addDisabledUserFilter(qb);
                     }
                     break;
                 case ANY:
                     break;
                 case ENABLED:
                     if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
+                        qb = addEnabledUserFilter(qb);
                     }
                     break;
             }
         }
 
-        return new IDMUserListAccess(qb, 20, false, userStatus);
+        return new IDMUserListAccess(qb, 20, false, countPaginatedUsers(), userStatus);
     }
 
     //
@@ -872,11 +871,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         }
     }
 
-    private UserQueryBuilder addDisabledUserFilter(UserQueryBuilder qb) throws Exception {
+    private UserQueryBuilder addEnabledUserFilter(UserQueryBuilder qb) throws Exception {
         return qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.TRUE.toString()});
     }
 
-    private UserQueryBuilder addEnabledUserFilter(UserQueryBuilder qb) throws Exception {
+    private UserQueryBuilder addDisabledUserFilter(UserQueryBuilder qb) throws Exception {
         return qb.attributeValuesFilter(UserDAOImpl.USER_ENABLED, new String[] {Boolean.FALSE.toString()});
     }
 

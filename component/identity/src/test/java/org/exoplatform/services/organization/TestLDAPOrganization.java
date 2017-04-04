@@ -1,17 +1,12 @@
 package org.exoplatform.services.organization;
 
-import exo.portal.component.identiy.opendsconfig.DSConfig;
 import exo.portal.component.identiy.opendsconfig.opends.OpenDSService;
-import java.net.URL;
+
 import java.util.Collection;
 import java.util.Date;
-import java.util.Hashtable;
-import javax.naming.Binding;
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.DirContext;
-import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapContext;
+
+import junit.framework.Assert;
+
 import org.exoplatform.commons.utils.ListAccess;
 import org.exoplatform.component.test.ConfigurationUnit;
 import org.exoplatform.component.test.ConfiguredBy;
@@ -19,9 +14,7 @@ import org.exoplatform.component.test.ContainerScope;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
-import org.exoplatform.services.organization.idm.PicketLinkIDMCacheService;
-import org.exoplatform.services.organization.idm.UserDAOImpl;
-import org.opends.server.tools.LDAPModify;
+import org.exoplatform.services.organization.idm.*;
 
 /**
  * Created by exo on 5/5/16.
@@ -34,30 +27,9 @@ public class TestLDAPOrganization extends TestOrganization {
 
   private static Log                      log                             = ExoLogger.getLogger(TestLDAPOrganization.class.getName());
 
-  public static final String              LDAP_HOST                       = "localhost";
-
-  public static final String              LDAP_PORT                       = "10389";
-
-  public static final String              LDAP_PROVIDER_URL               = "ldap://" + LDAP_HOST + ":" + LDAP_PORT;
-
-  public static final String              LDAP_PRINCIPAL                  = "cn=Directory Manager";
-
-  public static final String              LDAP_CREDENTIALS                = "password";
-
-  public String                           EMBEDDED_OPEN_DS_DIRECTORY_NAME = "EmbeddedOpenDS";
-
-  protected DSConfig                      directoryConfig;
-
-  public String                           directories                     = "ldap/datasources/directories.xml";
-
-  // By default use embedded OpenDS
-  private String                          directoryName                   = EMBEDDED_OPEN_DS_DIRECTORY_NAME;
-
-  public static Hashtable<String, String> env                             = new Hashtable<String, String>();
+  protected UserHandler uHandler;
 
   OpenDSService                           openDSService                   = new OpenDSService(null);
-
-  String                                  identityConfig;
 
   PortalContainer container;
 
@@ -70,9 +42,7 @@ public class TestLDAPOrganization extends TestOrganization {
   protected void beforeRunBare() {
     try {
       openDSService.start();
-      loadConfig();
-      populateLDIF();
-      populate();
+      openDSService.initLDAPServer();
     } catch (Exception e) {
       log.error("Error in starting up OPENDS", e);
       e.printStackTrace();
@@ -84,6 +54,7 @@ public class TestLDAPOrganization extends TestOrganization {
   protected void setUp() throws Exception {
     container = PortalContainer.getInstance();
     organization = (OrganizationService) container.getComponentInstanceOfType(OrganizationService.class);
+    uHandler = organization.getUserHandler();
     picketLinkIDMCacheService = (PicketLinkIDMCacheService) container.getComponentInstanceOfType(PicketLinkIDMCacheService.class);
     super.setUp();
     synchronizeUsers();
@@ -129,107 +100,212 @@ public class TestLDAPOrganization extends TestOrganization {
     }
   }
 
+  public void testIDMConfiguration(){
+    PicketLinkIDMOrganizationServiceImpl idmService = container.getComponentInstanceOfType(PicketLinkIDMOrganizationServiceImpl.class);
+    Config config =idmService.getConfiguration();
+    assertFalse(config.isCountPaginatedUsers());
+    assertTrue(config.isSkipPaginationInMembershipQuery());
+  }
+
+  public void testFindGroupHierachy() throws Exception {
+      GroupHandler handler = organizationService.getGroupHandler();
+      Group group = handler.findGroupById("/organization_hierarcy/OrganizationC");
+
+      Collection childGoups = handler.findGroups(group);
+      Assert.assertTrue(childGoups.size() > 0);
+  }
+
   public void testFindUser() throws Exception {
     assertNotNull(organization);
     begin();
     User test2 = organization.getUserHandler().findUserByName("admin");
     assertNotNull(test2);
-    cleanUpDN("uid=admin,ou=People,o=test,dc=portal,dc=example,dc=com");
+    openDSService.cleanUpDN("uid=admin,ou=People,o=test,dc=portal,dc=example,dc=com");
     picketLinkIDMCacheService.invalidateAll();
     test2 = organization.getUserHandler().findUserByName("admin");
     assertNull(test2);
     end();
   }
 
-  public void populateLDIFFile(String ldif) throws Exception {
+  public void testFindEnabledUsers() throws Exception {
+    Query query = new Query();
+    query.setUserName("*");
 
-    URL ldifURL = Thread.currentThread().getContextClassLoader().getResource(ldif);
+    ListAccess<User> listEnabled = organization.getUserHandler().findUsersByQuery(query, UserStatus.ENABLED);
+    ListAccess<User> listDisabled = organization.getUserHandler().findUsersByQuery(query, UserStatus.DISABLED);
+    ListAccess<User> listAll =organization.getUserHandler().findUsersByQuery(query, UserStatus.ANY);
+    assertNotNull(listDisabled);
+    assertNotNull(listAll);
+    assertNotNull(listEnabled);
+    assertEquals(0, listDisabled.load(0, listDisabled.getSize()).length);
+    assertEquals(listAll.load(0, listAll.getSize()).length, listEnabled.load(0, listEnabled.getSize()).length);
 
-    System.out.println("LDIF: " + ldifURL.toURI().getPath());
+    User adminUser = organization.getUserHandler().findUserByName("jduke", UserStatus.ENABLED);
+    assertNotNull(adminUser);
+    adminUser = organization.getUserHandler().findUserByName("jduke", UserStatus.DISABLED);
+    assertNull(adminUser);
+    adminUser = organization.getUserHandler().findUserByName("jduke", UserStatus.ANY);
+    assertNotNull(adminUser);
 
-    String[] cmd = new String[] { "-h", directoryConfig.getHost(), "-p", directoryConfig.getPort(), "-D",
-        directoryConfig.getAdminDN(), "-w", directoryConfig.getAdminPassword(), "-a", "-f", ldifURL.toURI().getPath() };
+    organization.getUserHandler().setEnabled("jduke", false, false );
+    adminUser = organization.getUserHandler().findUserByName("jduke", UserStatus.ENABLED);
+    assertNull(adminUser);
+    adminUser = organization.getUserHandler().findUserByName("jduke", UserStatus.DISABLED);
+    assertNotNull(adminUser);
+    adminUser = organization.getUserHandler().findUserByName("jduke", UserStatus.ANY);
+    assertNotNull(adminUser);
 
-    // Not sure why... but it actually does make a difference...
-    if (directoryName.equals(EMBEDDED_OPEN_DS_DIRECTORY_NAME)) {
-      System.out.println("Populate success: " + (LDAPModify.mainModify(cmd, false, System.out, System.err) == 0));
-    } else {
-      System.out.println("Populate success: " + (LDAPModify.mainModify(cmd) == 0));
+    ListAccess<User> newListEnabled = organization.getUserHandler().findUsersByQuery(query, UserStatus.ENABLED);
+    ListAccess<User> newListDisabled = organization.getUserHandler().findUsersByQuery(query, UserStatus.DISABLED);
+    ListAccess<User> newListAll = organization.getUserHandler().findUsersByQuery(query, UserStatus.ANY);
+
+    assertNotNull(newListEnabled);
+    assertNotNull(newListDisabled);
+    assertNotNull(newListAll);
+    assertEquals(1, newListDisabled.load(0, newListDisabled.getSize()).length);
+    assertEquals("jduke", newListDisabled.load(0,1)[0].getUserName());
+    for(int i=0; i< newListEnabled.getSize(); i++){
+      assertNotSame("jduke",newListEnabled.load(i,1)[0].getUserName() );
     }
   }
 
-  public void populate() throws Exception {
-    populateLDIFFile("ldap/ldap/initial-opends.ldif");
-  }
+  public void testFindUsers() throws Exception
+  {
+    Query query = new Query();
+    query.setEmail("email@test");
 
-  public void populateLDIF() throws Exception {
-    String ldif = directoryConfig.getPopulateLdif();
-    URL ldifURL = Thread.currentThread().getContextClassLoader().getResource(ldif);
+    // try to find user by email
+    assertSizeEquals(1, uHandler.findUsersByQuery(query), UserStatus.ENABLED);
+    assertSizeEquals(1, uHandler.findUsersByQuery(query, UserStatus.ENABLED), UserStatus.ENABLED);
+    assertSizeEquals(1, uHandler.findUsersByQuery(query, UserStatus.ANY), UserStatus.ANY);
 
-    System.out.println("LDIF: " + ldifURL.toURI().getPath());
+    // try to find user by name with mask
+    query = new Query();
+    query.setUserName("*tolik*");
+    assertSizeEquals(1, uHandler.findUsersByQuery(query));
 
-    String[] cmd = new String[] { "-h", directoryConfig.getHost(), "-p", directoryConfig.getPort(), "-D",
-        directoryConfig.getAdminDN(), "-w", directoryConfig.getAdminPassword(), "-a", "-f", ldifURL.toURI().getPath() };
+    // try to find user by name with mask
+    query = new Query();
+    query.setUserName("tol*");
+    assertSizeEquals(1, uHandler.findUsersByQuery(query));
 
-    // Not sure why... but it actually does make a difference...
-    if (directoryName.equals(EMBEDDED_OPEN_DS_DIRECTORY_NAME)) {
-      System.out.println("Populate success: " + (LDAPModify.mainModify(cmd, false, System.out, System.err) == 0));
-    } else {
-      System.out.println("Populate success: " + (LDAPModify.mainModify(cmd) == 0));
+    // try to find user by name with mask
+    query = new Query();
+    query.setUserName("*lik");
+    assertSizeEquals(4, uHandler.findUsersByQuery(query));
+
+    // try to find user by name explicitly
+    query = new Query();
+    query.setUserName("tolik");
+    assertSizeEquals(1, uHandler.findUsersByQuery(query));
+
+    // try to find user by part of name without mask
+    query = new Query();
+    query.setUserName("tol");
+    assertSizeEquals(1, uHandler.findUsersByQuery(query));
+
+    query = new Query();
+    query.setUserName("*olik");
+
+    ListAccess<User> users = uHandler.findUsersByQuery(query);
+
+    assertSizeEquals(4, users, UserStatus.ENABLED);
+    assertSizeEquals(4, uHandler.findUsersByQuery(query, UserStatus.ENABLED), UserStatus.ENABLED);
+    assertSizeEquals(4, uHandler.findUsersByQuery(query, UserStatus.ANY), UserStatus.ANY);
+
+    User[] allPage = users.load(0, 4);
+    User[] page1 = users.load(0, 2);
+    User[] page2 = users.load(2, 2);
+
+    assertEquals(allPage[0].getUserName(), page1[0].getUserName());
+    assertEquals(allPage[1].getUserName(), page1[1].getUserName());
+    assertEquals(allPage[2].getUserName(), page2[0].getUserName());
+    assertEquals(allPage[3].getUserName(), page2[1].getUserName());
+
+    try
+    {
+      users.load(0, 0);
+    }
+    catch (Exception e)
+    {
+      fail("Exception is not expected");
+    }
+
+    // try to load more than exist
+    try
+    {
+      users.load(0, 5);
+      fail("Exception is expected");
+    }
+    catch (Exception e)
+    {
+    }
+
+    // try to load more than exist
+    try
+    {
+      users.load(1, 4);
+      fail("Exception is expected");
+    }
+    catch (Exception e)
+    {
+      //expected
+    }
+
+    try
+    {
+      // Disable the user tolik
+      uHandler.setEnabled("tolik", false, true);
+
+      assertSizeEquals(3, uHandler.findUsersByQuery(query), UserStatus.ENABLED);
+      assertSizeEquals(3, uHandler.findUsersByQuery(query, UserStatus.ENABLED), UserStatus.ENABLED);
+      assertSizeEquals(1, uHandler.findUsersByQuery(query, UserStatus.DISABLED), UserStatus.DISABLED);
+      assertSizeEquals(4, uHandler.findUsersByQuery(query, UserStatus.ANY), UserStatus.ANY);
+
+      // Enable the user tolik
+      uHandler.setEnabled("tolik", true, true);
+
+      assertSizeEquals(4, uHandler.findUsersByQuery(query), UserStatus.ENABLED);
+      assertSizeEquals(4, uHandler.findUsersByQuery(query, UserStatus.ENABLED), UserStatus.ENABLED);
+      assertSizeEquals(0, uHandler.findUsersByQuery(query, UserStatus.DISABLED), UserStatus.DISABLED);
+      assertSizeEquals(4, uHandler.findUsersByQuery(query, UserStatus.ANY), UserStatus.ANY);
+    }
+    catch (UnsupportedOperationException e)
+    {
+      fail();
     }
   }
 
-  public void loadConfig() throws Exception {
-    directoryConfig = DSConfig.obtainConfig(directories, directoryName);
-
-    identityConfig = directoryConfig.getConfigFile();
-
-    env.put(Context.INITIAL_CONTEXT_FACTORY, directoryConfig.getContextFactory());
-    // Use description to store URL to be able to prefix with "ldaps://"
-    env.put(Context.PROVIDER_URL, directoryConfig.getDescription());
-    env.put(Context.SECURITY_AUTHENTICATION, "simple");
-    env.put(Context.SECURITY_PRINCIPAL, directoryConfig.getAdminDN());
-    env.put(Context.SECURITY_CREDENTIALS, directoryConfig.getAdminPassword());
-  }
-
-  private LdapContext getLdapContext() throws Exception {
-    Hashtable<String, String> env = new Hashtable<String, String>();
-    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-    env.put(Context.PROVIDER_URL, LDAP_PROVIDER_URL);
-    env.put(Context.SECURITY_AUTHENTICATION, "simple");
-    env.put(Context.SECURITY_PRINCIPAL, LDAP_PRINCIPAL);
-    env.put(Context.SECURITY_CREDENTIALS, LDAP_CREDENTIALS);
-
-    return new InitialLdapContext(env, null);
-  }
-
-  protected void cleanUpDN(String dn) throws Exception {
-    DirContext ldapCtx = getLdapContext();
-
-    try {
-      log.info("Removing: " + dn);
-
-      removeContext(ldapCtx, dn);
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-      ldapCtx.close();
+  protected void assertSizeEquals(int expectedSize, ListAccess<User> list, UserStatus status) throws Exception
+  {
+    int size;
+    assertEquals(expectedSize, size = list.getSize());
+    User[] values = list.load(0, size);
+    size = 0;
+    for (int i = 0; i < values.length; i++)
+    {
+      User usr = values[i];
+      if (usr != null && status.matches(usr.isEnabled()))
+      {
+        size++;
+      }
     }
+    assertEquals(expectedSize, size);
   }
 
-  // subsequent remove of javax.naming.Context
-  protected void removeContext(Context mainCtx, String name) throws Exception {
-    Context deleteCtx = (Context) mainCtx.lookup(name);
-    NamingEnumeration subDirs = mainCtx.listBindings(name);
-
-    while (subDirs.hasMoreElements()) {
-      Binding binding = (Binding) subDirs.nextElement();
-      String subName = binding.getName();
-
-      removeContext(deleteCtx, subName);
+  protected void assertSizeEquals(int expectedSize, ListAccess<?> list) throws Exception
+  {
+    int size;
+    assertEquals(expectedSize, size = list.getSize());
+    Object[] values = list.load(0, size);
+    size = 0;
+    for (int i = 0; i < values.length; i++)
+    {
+      if (values[i] != null)
+      {
+        size++;
+      }
     }
-
-    mainCtx.unbind(name);
+    assertEquals(expectedSize, size);
   }
-
 }

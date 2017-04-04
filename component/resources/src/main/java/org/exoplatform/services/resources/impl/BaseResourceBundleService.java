@@ -86,7 +86,8 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
          * {@inheritDoc}
          */
         public ResourceBundle retrieve(ResourceBundleContext context, String key) throws Exception {
-            return context.get(key);
+            ResourceBundle resourceBundle = context.get(key);
+            return resourceBundle == null ? ExoResourceBundle.NULL_OBJECT : resourceBundle;
         }
     };
 
@@ -413,11 +414,12 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
                 // Throw the RuntimeException if it occurs to remain compatible with the old behavior
                 throw ctx.e;
             } else {
-                return result;
+              return result == ExoResourceBundle.NULL_OBJECT ? null : result;
             }
         } else {
             // Case 2: ResourceBundle of portal
-            return getFutureCache().get(new GetResourceBundleFromDbContext(name, locale), id);
+            ResourceBundle resourceBundle = getFutureCache().get(new GetResourceBundleFromDbContext(name, locale), id);
+            return resourceBundle == ExoResourceBundle.NULL_OBJECT ? null : resourceBundle;
         }
     }
 
@@ -437,7 +439,13 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
         if (futureCache_ == null) {
             synchronized (this) {
                 if (futureCache_ == null) {
-                    futureCache_ = new FutureExoCache<String, ResourceBundle, ResourceBundleContext>(loader_, cache_);
+                    futureCache_ = new FutureExoCache<String, ResourceBundle, ResourceBundleContext>(loader_, cache_) {
+                      @Override
+                      protected ResourceBundle get(String key) {
+                        ResourceBundle resourceBundle = super.get(key);
+                        return resourceBundle == ExoResourceBundle.NULL_OBJECT ? null : resourceBundle;
+                      }
+                    };
                 }
             }
         }
@@ -493,7 +501,7 @@ public abstract class BaseResourceBundleService implements ResourceBundleService
             if (result != null) {
                 return result;
             } else {
-                return parent;
+                return parent == null ? ExoResourceBundle.NULL_OBJECT : parent;
             }
         }
 

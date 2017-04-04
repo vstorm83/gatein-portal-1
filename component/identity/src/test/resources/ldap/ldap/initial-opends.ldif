@@ -17,6 +17,11 @@ objectclass: top
 objectclass: organization
 o: test
 
+dn: ou=GroupsHierarchy,o=test,dc=portal,dc=example,dc=com
+objectclass: top
+objectclass: organizationalUnit
+ou: Groups
+
 dn: ou=People,o=test,dc=portal,dc=example,dc=com
 objectclass: top
 objectclass: organizationalUnit
@@ -32,6 +37,42 @@ cn: Java Duke
 sn: Duke
 userPassword: admin
 mail: email@email.com
+
+dn: uid=tolik,ou=People,o=test,dc=portal,dc=example,dc=com
+objectclass: top
+objectclass: inetOrgPerson
+objectclass: person
+uid: tolik
+cn: tolik
+sn: Portal tolik
+userPassword: tolik
+mail: email@test
+
+dn: uid=rolik,ou=People,o=test,dc=portal,dc=example,dc=com
+objectclass: top
+objectclass: inetOrgPerson
+objectclass: person
+uid: rolik
+cn: rolik
+sn: rolik User
+userPassword: rolik
+
+dn: uid=bolik,ou=People,o=test,dc=portal,dc=example,dc=com
+objectclass: top
+objectclass: inetOrgPerson
+objectclass: person
+uid: bolik
+cn: bolik
+sn: bolik User
+
+dn: uid=volik,ou=People,o=test,dc=portal,dc=example,dc=com
+objectclass: top
+objectclass: inetOrgPerson
+objectclass: person
+uid: volik
+cn: volik
+sn: volik User
+userPassword: volik
 
 dn: uid=user,ou=People,o=test,dc=portal,dc=example,dc=com
 objectclass: top
@@ -160,6 +201,21 @@ dn: cn=OrganizationB,ou=Groups,o=test,dc=portal,dc=example,dc=com
 objectClass: top
 objectClass: groupOfNames
 cn: OrganizationB
+description: Some organization
+member: cn=User,ou=Roles,o=test,dc=portal,dc=example,dc=com
+member: cn=Admin,ou=Roles,o=test,dc=portal,dc=example,dc=com
+
+dn: cn=OrganizationC,ou=GroupsHierarchy,o=test,dc=portal,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: OrganizationC
+description: Some organization
+member: cn=SubOrganizationC,ou=GroupsHierarchy,o=test,dc=portal,dc=example,dc=com
+
+dn: cn=SubOrganizationC,ou=GroupsHierarchy,o=test,dc=portal,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: SubOrganizationC
 description: Some organization
 member: cn=User,ou=Roles,o=test,dc=portal,dc=example,dc=com
 member: cn=Admin,ou=Roles,o=test,dc=portal,dc=example,dc=com
