@@ -190,7 +190,7 @@
       </dependency>
       <dependency>
         <groupId>org.exoplatform.kernel</groupId>
-        <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
+        <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v8</artifactId>
         <version>${org.exoplatform.kernel.version}</version>
         <exclusions>
           <exclusion>

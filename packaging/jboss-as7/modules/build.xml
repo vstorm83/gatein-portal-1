@@ -249,7 +249,7 @@
       <maven-resource group="org.exoplatform.kernel" artifact="exo.kernel.component.cache"/>
       <maven-resource group="org.exoplatform.kernel" artifact="exo.kernel.component.command"/>
       <maven-resource group="org.exoplatform.kernel" artifact="exo.kernel.component.common"/>
-      <maven-resource group="org.exoplatform.kernel" artifact="exo.kernel.component.ext.cache.impl.infinispan.v5"/>
+      <maven-resource group="org.exoplatform.kernel" artifact="exo.kernel.component.ext.cache.impl.infinispan.v8"/>
       <maven-resource group="org.exoplatform.kernel" artifact="exo.kernel.container"/>
       <maven-resource group="org.exoplatform.gatein.portal" artifact="exo.portal.component.api" />
       <maven-resource group="org.exoplatform.gatein.portal" artifact="exo.portal.component.application-registry"/>
@@ -352,7 +352,6 @@
 
     <module-def name="org.picketlink.idm">
       <maven-resource group="org.picketlink.idm" artifact="picketlink-idm-api"/>
-      <maven-resource group="org.picketlink.idm" artifact="picketlink-idm-cache"/>
       <maven-resource group="org.picketlink.idm" artifact="picketlink-idm-common"/>
       <maven-resource group="org.picketlink.idm" artifact="picketlink-idm-core"/>
       <maven-resource group="org.picketlink.idm" artifact="picketlink-idm-hibernate"/>

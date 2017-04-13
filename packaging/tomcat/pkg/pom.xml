@@ -123,7 +123,7 @@
     </dependency>
     <dependency>
       <groupId>org.exoplatform.kernel</groupId>
-      <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v5</artifactId>
+      <artifactId>exo.kernel.component.ext.cache.impl.infinispan.v8</artifactId>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.core</groupId>
@@ -254,10 +254,6 @@
     <dependency>
       <groupId>org.picketlink.idm</groupId>
       <artifactId>picketlink-idm-spi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.picketlink.idm</groupId>
-      <artifactId>picketlink-idm-cache</artifactId>
     </dependency>
     <dependency>
       <groupId>org.picketlink.idm</groupId>
