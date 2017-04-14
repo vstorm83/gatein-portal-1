@@ -134,7 +134,7 @@
     <module>wsrp-integration</module>
     <module>mobile-integration</module>
     <module>cdi</module>
-    <module>packaging</module>
+<!--    <module>packaging</module> fixme resolve dependency-->
     <module>testsuite</module>
   </modules>
 
