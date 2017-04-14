@@ -45,7 +45,7 @@
             <persistence passivation="false">
                 <string-keyed-jdbc-store xmlns="urn:infinispan:config:store:jdbc:8.0" shared="true" fetch-state="true" read-only="false" purge="false" preload="true">
                     <string-keyed-table drop-on-exit="${infinispan-cl-cache.jdbc.table.drop}" create-on-start="${infinispan-cl-cache.jdbc.table.create}"
-                                        prefix="${infinispan-cl-cache.jdbc.table.name}">
+                                        prefix="${infinispan-cl-cache.jdbc.table.name:lk}">
                         <id-column name="${infinispan-cl-cache.jdbc.id.column}" type="${infinispan-cl-cache.jdbc.id.type}" />
                         <data-column name="${infinispan-cl-cache.jdbc.data.column}" type="${infinispan-cl-cache.jdbc.data.type}" />
                         <timestamp-column name="${infinispan-cl-cache.jdbc.timestamp.column}" type="${infinispan-cl-cache.jdbc.timestamp.type}" />
