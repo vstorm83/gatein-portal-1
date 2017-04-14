@@ -86,13 +86,11 @@
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-commons</artifactId>
-      <version>8.2.6.Final</version>
     </dependency>
 
     <dependency>
       <groupId>org.infinispan</groupId>
       <artifactId>infinispan-core</artifactId>
-      <version>8.2.6.Final</version>
     </dependency>
 
     <dependency>
