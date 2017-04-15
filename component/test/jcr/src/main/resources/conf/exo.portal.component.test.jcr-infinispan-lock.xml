@@ -41,7 +41,7 @@
         <local-cache-configuration name="default" statistics="true">
             <locking isolation="READ_COMMITTED" concurrency-level="500" striping="false" write-skew="false" acquire-timeout="20000"/>
             <transaction mode="NON_XA" transaction-manager-lookup="org.exoplatform.services.transaction.infinispan.JBossStandaloneJTAManagerLookup" />
-            <eviction size="1000000" strategy="LRU" thread-policy="DEFAULT"/>
+            <eviction strategy="NONE"/>
             <persistence passivation="false">
                 <string-keyed-jdbc-store xmlns="urn:infinispan:config:store:jdbc:8.0" shared="true" fetch-state="true" read-only="false" purge="false" preload="true">
                     <string-keyed-table drop-on-exit="${infinispan-cl-cache.jdbc.table.drop}" create-on-start="${infinispan-cl-cache.jdbc.table.create}"
