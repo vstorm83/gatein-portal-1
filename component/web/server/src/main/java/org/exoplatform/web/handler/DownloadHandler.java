@@ -59,6 +59,7 @@ public class DownloadHandler extends WebRequestHandler {
         ExoContainer container = ExoContainerContext.getCurrentContainer();
         DownloadService dservice = (DownloadService) container.getComponentInstanceOfType(DownloadService.class);
         DownloadResource dresource = dservice.getDownloadResource(resourceId);
+        dservice.addDownloadResource(dresource);
         if (dresource == null) {
             res.setContentType("text/plain");
             res.getWriter().write("NO DOWNDLOAD RESOURCE CONTENT  OR YOU DO NOT HAVE THE RIGHT TO ACCESS THE CONTENT");
