@@ -64,7 +64,7 @@ import groovy.text.Template;
 @ManagedDescription("Template management service")
 @RESTEndpoint(path = "templateservice")
 public class TemplateService implements Startable {
-  
+
     private ExecutorService executorService = Executors.newCachedThreadPool();
 
     private GroovyTemplateEngine engine_;
