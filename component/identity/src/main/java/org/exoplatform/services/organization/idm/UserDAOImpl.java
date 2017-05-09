@@ -505,13 +505,9 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
                     break;
             }            
         }
-
-        if (q.getUserName() == null && q.getEmail() == null && q.getFirstName() == null && q.getLastName() == null) {
-            list = new IDMUserListAccess(qb, 20, !countPaginatedUsers(), countPaginatedUsers(), userStatus);
-        } else {
-            list = new IDMUserListAccess(qb, 20, false, countPaginatedUsers(), userStatus);
-        }
-
+        
+        list = new IDMUserListAccess(qb, 20, false, countPaginatedUsers(), userStatus);
+        
         if (cache != null) {
             cache.putGtnUserLazyPageList(getCacheNS(), q, list, userStatus);
         }
