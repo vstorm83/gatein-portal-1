@@ -608,17 +608,11 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
         qb.addRelatedGroup(jbidGroup);
 
         if (disableUserActived()) {
-            switch (userStatus) {
-                case DISABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addDisabledUserFilter(qb);
-                    }
-                    break;
-                case ANY:
-                    break;
+            if(userStatus.equals(UserStatus.DISABLED) && filterDisabledUsersInQueries()){
+                qb = addDisabledUserFilter(qb);
             }
         }
-
+        
         return new IDMUserListAccess(qb, 20, false, countPaginatedUsers(), userStatus);
     }
 
