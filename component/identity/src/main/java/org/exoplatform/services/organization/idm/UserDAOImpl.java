@@ -616,11 +616,6 @@ public class UserDAOImpl extends AbstractDAOImpl implements UserHandler {
                     break;
                 case ANY:
                     break;
-                case ENABLED:
-                    if (filterDisabledUsersInQueries()) {
-                        qb = addEnabledUserFilter(qb);
-                    }
-                    break;
             }
         }
 
