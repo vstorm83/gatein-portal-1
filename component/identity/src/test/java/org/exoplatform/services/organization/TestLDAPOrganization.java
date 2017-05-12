@@ -69,6 +69,7 @@ public class TestLDAPOrganization extends TestOrganization {
       end();
     for (User user : users) {
       String username = user.getUserName();
+
       if (user.getCreatedDate() == null) {
         user.setCreatedDate(new Date());
       }
