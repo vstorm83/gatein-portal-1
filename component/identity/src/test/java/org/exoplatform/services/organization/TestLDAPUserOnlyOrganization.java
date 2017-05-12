@@ -53,4 +53,9 @@ public class TestLDAPUserOnlyOrganization extends TestLDAPOrganization {
     }
     assertTrue("User test is not found in group " + GROUP_1, foundUser);
   }
+
+  public void testFindUser() throws Exception {
+    // Disable this test because it deletes an entry from LDAP
+  }
+
 }
