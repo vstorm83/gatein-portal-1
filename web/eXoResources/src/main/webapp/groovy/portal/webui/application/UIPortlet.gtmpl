@@ -133,7 +133,7 @@
 					
 					
 					<div class="middleDecorator">
-						<div id="<%=editMode == EditMode.NO_EDIT ? portletId : "EditMode-"+ portletId%>" style="width: 100%">
+						<div id="<%=editMode == EditMode.NO_EDIT ? "viewMode-"+portletId : "EditMode-"+ portletId%>" style="width: 100%">
 							<div class="PORTLET-FRAGMENT UIResizableBlock UIApplication" style="width: 100%; height: $windowHeight;">
 								<% 
 									if(windowState != WindowState.MINIMIZED) {
@@ -167,7 +167,7 @@
 				cssStyle += "height: "+ windowHeight +";";
 			}
  %>
- 				<div id="<%=editMode == EditMode.NO_EDIT ? portletId : "EditMode-"+ portletId%>">
+ 				<div id="<%=editMode == EditMode.NO_EDIT ?  "viewMode-" + portletId : "EditMode-"+ portletId%>">
 					<div class="PORTLET-FRAGMENT" style="${cssStyle}">
  						<% 
 							if(hasAccessPermission)
