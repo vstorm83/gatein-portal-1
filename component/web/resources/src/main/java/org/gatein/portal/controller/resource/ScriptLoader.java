@@ -23,9 +23,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 import org.exoplatform.commons.cache.future.Loader;
 import org.exoplatform.commons.utils.CharsetTextEncoder;
+import org.exoplatform.commons.utils.CompositeReader;
 import org.exoplatform.commons.utils.Safe;
 import org.exoplatform.commons.utils.TextEncoder;
 import org.exoplatform.container.PortalContainer;
@@ -56,6 +60,10 @@ class ScriptLoader implements Loader<ScriptKey, ScriptResult, ControllerContext>
         //
         if (script != null) {
             if (key.minified) {
+                StringBuilder[] parsedScript = parseExclude(script);
+                StringBuilder minify = parsedScript[0];
+                StringBuilder exclude = parsedScript[1];
+
                 CompilationLevel level = CompilationLevel.SIMPLE_OPTIMIZATIONS;
                 CompilerOptions options = new CompilerOptions();
                 level.setOptionsForCompilationLevel(options);
@@ -63,11 +71,11 @@ class ScriptLoader implements Loader<ScriptKey, ScriptResult, ControllerContext>
                 compiler.setErrorManager(new LoggerErrorManager(java.util.logging.Logger.getLogger(ResourceRequestHandler.class
                         .getName())));
                 StringWriter code = new StringWriter();
-                IOTools.copy(script, code);
+                IOTools.copy(new StringReader(minify.toString()), code);
                 JSSourceFile[] inputs = new JSSourceFile[] { JSSourceFile.fromCode(sourceName, code.toString()) };
                 Result res = compiler.compile(new JSSourceFile[0], inputs, options);
                 if (res.success) {
-                    script = new StringReader(compiler.toSource());
+                    script = new CompositeReader(new StringReader(exclude.toString()), new StringReader(compiler.toSource()));
                 } else {
                     StringBuilder msg = new StringBuilder("Handle me gracefully JS errors\n");
                     for (JSError error : res.errors) {
@@ -94,5 +102,33 @@ class ScriptLoader implements Loader<ScriptKey, ScriptResult, ControllerContext>
 
         //
         return ScriptResult.NOT_FOUND;
+    }
+
+    private StringBuilder[] parseExclude(Reader script) {
+        StringBuilder minify = new StringBuilder();
+        StringBuilder exclude = new StringBuilder();
+
+        boolean excluding = false;
+        Scanner scanner = new Scanner(script);
+        while (scanner.hasNextLine()) {
+            String code = scanner.nextLine();
+
+            if (code.contains(JavascriptConfigService.BEGIN_EXCLUDE)) {
+                excluding = true;
+                continue;
+            }
+            if (code.contains(JavascriptConfigService.END_EXCLUDE)) {
+                excluding = false;
+                continue;
+            }
+            //
+            if (excluding) {
+                exclude.append(code).append("\n");
+            } else {
+                minify.append(code).append("\n");
+            }
+        }
+
+        return new StringBuilder[] {minify, exclude};
     }
 }

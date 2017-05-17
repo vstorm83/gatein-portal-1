@@ -66,6 +66,10 @@ import org.picocontainer.Startable;
 
 public class JavascriptConfigService extends AbstractResourceService implements Startable {
 
+    public static final String BEGIN_EXCLUDE = "@org.exoplatform.javascript.exclude.begin";
+
+    public static final String END_EXCLUDE = "@org.exoplatform.javascript.exclude.end";
+
     /** Our logger. */
     private final Log log = ExoLogger.getLogger(JavascriptConfigService.class);
 
@@ -128,7 +132,19 @@ public class JavascriptConfigService extends AbstractResourceService implements 
                 //
                 boolean isModule = FetchMode.ON_LOAD.equals(resource.getFetchMode());
 
+                boolean isExcluded = false;
+                if (!modules.isEmpty()) {
+                    Module mod = modules.get(0);
+                    if (mod instanceof Module.Local) {
+                        isExcluded = !((Module.Local)mod).isMinify();
+                    }
+                }
+
                 if (isModule) {
+                    if (isExcluded) {
+                        beginExclude(buffer);
+                    }
+
                     JSONArray deps = new JSONArray();
                     LinkedList<String> params = new LinkedList<String>();
                     List<String> argNames = new LinkedList<String>();
@@ -176,14 +192,23 @@ public class JavascriptConfigService extends AbstractResourceService implements 
                 for (Module js : modules) {
                     Reader jScript = getJavascript(js, locale);
                     if (jScript != null) {
+                        if (!isModule && isExcluded) {
+                            beginExclude(buffer);
+                        }
                         readers.add(new StringReader(buffer.toString()));
                         buffer.setLength(0);
                         readers.add(new NormalizeJSReader(jScript));
+                        if (!isModule && isExcluded) {
+                            endExclude(buffer);
+                        }
                     }
                 }
 
                 if (isModule) {
                     buffer.append("\n});");
+                    if (isExcluded) {
+                        endExclude(buffer);
+                    }
                 } else {
                     buffer.append("\nif (typeof define === 'function' && define.amd && !require.specified('")
                             .append(resource.getId()).append("')) {");
@@ -196,6 +221,14 @@ public class JavascriptConfigService extends AbstractResourceService implements 
                 return null;
             }
         }
+    }
+
+    private void beginExclude(StringBuilder buffer) {
+        buffer.append("\n//").append(BEGIN_EXCLUDE).append("\n");
+    }
+
+    private void endExclude(StringBuilder buffer) {
+        buffer.append("\n//").append(END_EXCLUDE).append("\n");
     }
 
     @SuppressWarnings("unchecked")
